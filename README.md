@@ -31,7 +31,7 @@ Run: `python 3_construct_graphs.py <directory_name>`
 ## Configuration options
 Configuration for the tools can be added in `contentConfig.json` in the base directory of your text.
 
-An example using all availalble configurable options follows:
+An example using all available configurable options follows:
 ```{
     "splits": {
         "first_half_prefix": "1h_",
@@ -46,6 +46,61 @@ An example using all availalble configurable options follows:
         "stitched_prefix": "stitched_"
     }
     "patterns": {
-
+        "primary": "\w",
+        "secondary": "\w",
+        "match_primary_score_first_threshold": "2",
+        "match_secondary_score_first_threshold": "15",
+        "match_primary_score_second_threshold": "1",
+        "match_secondary_score_second_threshold": "20",
+        "match_word_count_threshold": "5",
+        "original_name_similarity_threshold": "0.90",
+        "used_name_in_project_similarity_threshold": "0.8",
+        "used_name_in_file_similarity_threshold": "0.85",
     }
-}```
+    "logger" {
+        "level": "INFO"
+    }
+}
+```
+
+### Configuration option descriptions
+`first_half_prefix`: When files are split in half, the prefix to use for the file name of the first half of the split. This isn't an option that will normally need configuring.
+Default: `1h_`
+
+`second_half_prefix`: When files are split in half, the prefix to use for the file name of the second half of the split. This isn't an option that will normally need configuring.
+Default: `2h_`
+
+`file_prefix`: Prefix to use for files created by NER (Named Entity Recognition). The NER files created by this program are text files containing lists of entities recognized by Spacey.
+
+You should not normally need to configure this file prefix yourself. Default: `ner_`
+
+`model`: The spaCy model to use for NER. Take a look at the available models to use here: https://spacy.io/models/en. The larger models are more accurate but take longer to run. In my experience with using models in this program, the `en_core_web_sm` works well and is fast. However, the name list will need review and pruning afterwords. You might want to tinker with this to find the right balance of speed and accuracy for you.
+Default: `en_core_web_sm`
+
+`replaced_prefix`: When names from the text are replaced, the prefix used for the resulting file. There should normally be no need for configuring this manually.
+Default: `replaced_`
+
+`stitched_prefix`: The prefix to use for split files after they have been stitched back together. There should normally be no need for configuring this manually.
+Default: `stitched_`
+
+`patterns["primary"]`: For use in `2_match_count.py`. The primary pattern used to find sections of the text that match a particular regex.
+Default: `\w`
+
+`patterns["secondary"]`: For use in `2_match_count.py`. The secondary pattern used to find sections of the text that match a particular regex. Useful if there are two different patterns that one wishes to track separately
+Default: `\w`
+
+`patterns["match_primary_score_first_threshold"]`:
+
+`patterns[match_secondary_score_first_threshold"]`:
+
+`patterns[match_primary_score_second_threshold"]`:
+
+`patterns[match_secondary_score_second_threshold]"`:
+
+`patterns[match_word_count_threshold]`:
+
+`patterns[original_name_similarity_threshold"]`:
+
+`patterns[used_name_in_project_similarity_threshold"]`:
+
+`patterns[used_name_in_file_similarity_threshold"]`:
