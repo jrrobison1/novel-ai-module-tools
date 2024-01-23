@@ -29,3 +29,23 @@ Run: `python 3_construct_graphs.py <directory_name>`
 
 
 ## Configuration options
+Configuration for the tools can be added in `contentConfig.json` in the base directory of your text.
+
+An example using all availalble configurable options follows:
+```{
+    "splits": {
+        "first_half_prefix": "1h_",
+        "second_half_prefix": "2h_"
+    },
+    "ner": {
+        "file_prefix": "ner_",
+        "model": "en_core_web_trf"
+    },
+    "replacements": {
+        "replaced_prefix": "replaced_",
+        "stitched_prefix": "stitched_"
+    }
+    "patterns": {
+
+    }
+}```
