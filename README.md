@@ -19,9 +19,12 @@ Run: `python 1_formatter.py <directory_name>`
 Run: `python 2_match_count.py <file_name>`
 
 ### 3_split_and_ner.py
+Splits the files in the given directory in half, and performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
+
 Run: `python 3_split_and_ner.py <directory_name>`
 
 ### 4_find_and_replace.py
+
 Run: `python 4_find_and_replace.py <directory_name>`
 
 ### 5_construct_graphs.py
