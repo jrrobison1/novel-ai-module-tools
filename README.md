@@ -22,7 +22,10 @@ Run: `python 2_match_count.py <file_name>`
 Run: `python 3_split_and_ner.py <directory_name>`
 
 ### 4_find_and_replace.py
+Run: `python 4_find_and_replace.py <directory_name>`
 
 ### 5_construct_graphs.py
+Run: `python 3_construct_graphs.py <directory_name>`
 
 
+## Configuration options
