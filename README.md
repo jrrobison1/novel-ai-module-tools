@@ -19,6 +19,7 @@ Run: `python 1_formatter.py <directory_name>`
 Run: `python 2_match_count.py <file_name>`
 
 ### 3_split_and_ner.py
+Run: `python 3_split_and_ner.py <directory_name>`
 
 ### 4_find_and_replace.py
 
