@@ -16,6 +16,7 @@ The directory passes to `1_formatter` is expected to have its txt files in a dir
 Run: `python 1_formatter.py <directory_name>`
 
 ### 2_match_count.py
+Run: `python 2_match_count.py <file_name>`
 
 ### 3_split_and_ner.py
 
