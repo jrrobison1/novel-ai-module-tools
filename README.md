@@ -6,3 +6,6 @@ These are model-agnostic. I wrote them when Sigurd was the newest model, but the
 ## The tools
 There are five tools, prefixed with the number in the order in which they should be run.
 
+### 1_formatter.py
+Run: `python 1_formatter.py <directory_name>`
+
