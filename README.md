@@ -7,5 +7,20 @@ These are model-agnostic. I wrote them when Sigurd was the newest model, but the
 There are five tools, prefixed with the number in the order in which they should be run.
 
 ### 1_formatter.py
+Formats the text in the way NovelAI likes. Each paragraph on a separate line. Fancy quotes into regular quotes. Smart ellipsis into simple txt version. Dashes replaced with em's. Simple section/chapter headings replaced with "***".
+
+Formats all text files in the directory.
+
+The directory passes to `1_formatter` is expected to have its txt files in a directory called `edited`. The files are modified in-place.
+
 Run: `python 1_formatter.py <directory_name>`
+
+### 2_match_count.py
+
+### 3_split_and_ner.py
+
+### 4_find_and_replace.py
+
+### 5_construct_graphs.py
+
 
