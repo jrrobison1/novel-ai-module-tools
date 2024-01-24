@@ -7,7 +7,7 @@ These are model-agnostic. I wrote them when Sigurd was the newest model, but the
 1. Clone the repository
 2. Within the project directory, run
    - `python -m venv virtualenv/`
-   - `python -m pip install -r requirements.txt
+   - `python -m pip install -r requirements.txt`
 
 
 ## The tools
