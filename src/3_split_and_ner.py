@@ -6,7 +6,7 @@ from os import walk
 from numpy import random
 
 from ner import perform_ner
-from split_file import splitFile
+from split_file import split_file
 from config import *
 
 
@@ -45,7 +45,7 @@ ner_source_files = []
 # Create splits
 for file_name in edited_filenames:
     full_filename = os.path.join(edited_directory, file_name)
-    splits = splitFile(full_filename)
+    splits = split_file(full_filename)
 
     if splits["no_stars"] == True:
         no_splits_file = open(
