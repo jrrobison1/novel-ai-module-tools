@@ -24,7 +24,8 @@ The directory passes to `1_formatter` is expected to have its txt files in a dir
 Run: `poetry run python 1_formatter.py <directory_name>`
 
 ### 2_pick_and_choose.py
-Pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json
+Pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json.
+
 Run: `poetry run python 2_pick_and_choose.py <file_name>`
 
 ![Pick and Choose Screenshot](/img/2_screenshot.png "Pick and Choose Screenshot")
