@@ -23,15 +23,15 @@ Formats all text files in the directory.
 
 The directory passes to `1_formatter` is expected to have its txt files in a directory called `edited`. The files are modified in-place.
 
-Run: `python 1_formatter.py <directory_name>`
+Run: `poetry run python 1_formatter.py <directory_name>`
 
-### 2_match_count.py
-Run: `python 2_match_count.py <file_name>`
+### 2_pick_and_choose.py
+Run: `poetry run python 2_pick_and_choose.py <file_name>`
 
 ### 3_split_and_ner.py
 Splits the files in the given directory in half, and performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
 
-Run: `python 3_split_and_ner.py <directory_name>`
+Run: `poetry run python 3_split_and_ner.py <directory_name>`
 
 ### 4_find_and_replace.py
 Uses the list of named entities found by `3_split_and_ner.py` and replaces those 
@@ -46,10 +46,10 @@ appearance of any particular name.
 The other reason is one of preference. You may want to modify the names in the text to be more global. For example, if a text contains names that are typically used only in the U.S., you could use this to modify those names automatically 
 with a list of more diverse names that you specify in a list. Or, maintain the existing diversity of the text but still use different names which you specify.
 
-Run: `python 4_find_and_replace.py <directory_name>`
+Run: `poetry run python 4_find_and_replace.py <directory_name>`
 
 ### 5_construct_graphs.py
-Run: `python 3_construct_graphs.py <directory_name>`
+Run: `poetry run python 3_construct_graphs.py <directory_name>`
 
 
 ## Configuration options

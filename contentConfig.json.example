@@ -1,0 +1,26 @@
+{
+    "splits": {
+        "first_half_prefix": "1h_",
+        "second_half_prefix": "2h_"
+    },
+    "ner": {
+        "file_prefix": "ner_",
+        "model": "en_core_web_sm"
+    },
+    "replacements": {
+        "replaced_prefix": "replaced_",
+        "stitched_prefix": "stitched_"
+    },
+    "patterns": {
+        "primary": "\\sthis\\s",
+        "secondary": "\\sexample\\s",
+        "match_word_count_threshold": 5,
+        "match_primary_score_first_threshold": 3,
+        "match_secondary_score_first_threshold": 18,
+        "match_primary_score_second_threshold": 1,
+        "match_secondary_score_second_threshold": 20,
+        "original_name_similarity_threshold": 0.85,
+        "used_name_in_project_similarity_threshold": 0.85,
+        "used_name_in_file_similarity_threshold": 0.85
+    }
+}
