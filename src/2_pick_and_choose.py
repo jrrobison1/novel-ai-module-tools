@@ -199,10 +199,6 @@ class MainWindow(QMainWindow):
         self.handle_button_click()
 
     def handle_button_click(self):
-        global book_primary_score
-        global book_secondary_score
-        global section_primary_score
-        global section_secondary_score
         self.section_index += 1
         self.update_temp_full_text()
         book_primary_score = self.get_book_primary_score()
