@@ -201,6 +201,13 @@ class MainWindow(QMainWindow):
     def handle_button_click(self):
         self.section_index += 1
         self.update_temp_full_text()
+
+        if self.section_index > len(self.sections) - 1:
+            # Write file out
+            with open("write_out.txt", "w") as f:
+                f.write(self.current_full_text)
+            f.close()
+
         book_primary_score = self.get_book_primary_score()
         self.book_primary_label.setText(
             f"Primary: {book_primary_score:.2f} ({(book_primary_score - book_original_primary_score):.2f})"
@@ -245,6 +252,16 @@ class MainWindow(QMainWindow):
 
     def get_section_secondary_score(self):
         return get_score(self.sections[self.section_index], secondary_pattern)
+
+    def closeEvent(self, event):
+        """Handle the window close event."""
+        logger.info("Closing the application")
+        # Write file out
+        with open("write_out.txt", "w") as f:
+            f.write(self.current_full_text)
+        f.close()
+        QApplication.quit()
+        event.accept()
 
 
 if __name__ == "__main__":
