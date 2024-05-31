@@ -26,6 +26,7 @@ The directory passes to `1_formatter` is expected to have its txt files in a dir
 Run: `poetry run python 1_formatter.py <directory_name>`
 
 ### 2_pick_and_choose.py
+Pick, choose, and modify sections of the text to be used for module creation.
 Run: `poetry run python 2_pick_and_choose.py <file_name>`
 
 ### 3_split_and_ner.py
