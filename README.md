@@ -8,9 +8,7 @@ This project uses Poetry for dependency management.
 1. Ensure `poetry` is installed:
     - `pip install poetry`
 2. Clone this repository
-2. Within the project directory, run
-   - `poetry install`
-   - `poetry run python <filename of tool>`
+2. Within the project directory, run `poetry install`
 
 
 ## The tools
