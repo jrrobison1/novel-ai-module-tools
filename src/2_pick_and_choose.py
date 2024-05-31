@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
         self.current_full_text = current_full_text
         self.section_index = 0
 
-        self.setWindowTitle("Match Count")
+        self.setWindowTitle("Pick and Choose")
         self.setGeometry(100, 100, 800, 600)
 
         central_widget = QWidget()
