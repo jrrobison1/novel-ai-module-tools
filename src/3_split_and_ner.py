@@ -37,7 +37,7 @@ os.makedirs(ner_directory, exist_ok=True)
 # Get edited file list
 edited_filenames = next(walk(edited_directory), (None, None, []))[2]
 for filename in edited_filenames:
-    if (filename.startswith(".")):
+    if filename.startswith("."):
         edited_filenames.remove(filename)
 
 ner_source_files = []
@@ -48,7 +48,9 @@ for file_name in edited_filenames:
     splits = splitFile(full_filename)
 
     if splits["no_stars"] == True:
-        no_splits_file = open(os.path.join(splits_directory, "nosplits_" + file_name), "w")
+        no_splits_file = open(
+            os.path.join(splits_directory, "nosplits_" + file_name), "w"
+        )
         no_splits_file.write(splits["full_text"])
         no_splits_file.close()
 
@@ -56,11 +58,15 @@ for file_name in edited_filenames:
         ner_source_files.append(no_splits_file.name)
 
     else:
-        first_half_file = open(os.path.join(splits_directory, SPLITS_FIRST_HALF_PREFIX + file_name), "w")
+        first_half_file = open(
+            os.path.join(splits_directory, SPLITS_FIRST_HALF_PREFIX + file_name), "w"
+        )
         first_half_file.write(splits["first_half"])
         first_half_file.close()
 
-        second_half_file = open(os.path.join(splits_directory, SPLITS_SECOND_HALF_PREFIX + file_name), "w")
+        second_half_file = open(
+            os.path.join(splits_directory, SPLITS_SECOND_HALF_PREFIX + file_name), "w"
+        )
         second_half_file.write(splits["second_half"])
         second_half_file.close()
 
@@ -68,4 +74,9 @@ for file_name in edited_filenames:
         print(f"Will perform NER on file: [{random_choice}]")
         ner_source_files.append(random_choice)
 
-perform_ner(ner_source_files, ner_directory, resource_dir, ["nosplits_", SPLITS_FIRST_HALF_PREFIX, SPLITS_SECOND_HALF_PREFIX])
+perform_ner(
+    ner_source_files,
+    ner_directory,
+    resource_dir,
+    ["nosplits_", SPLITS_FIRST_HALF_PREFIX, SPLITS_SECOND_HALF_PREFIX],
+)

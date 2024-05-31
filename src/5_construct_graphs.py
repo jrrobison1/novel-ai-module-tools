@@ -16,7 +16,7 @@ except:
 stitched_directory = os.path.join(working_directory, "names_replaced", "stitched")
 filenames = next(walk(stitched_directory), (None, None, []))[2]  # [] if no file
 for filename in filenames:
-    if (filename.startswith("." or not filename.endswith(".txt"))):
+    if filename.startswith("." or not filename.endswith(".txt")):
         filenames.remove(filename)
 
 books = {}
@@ -54,9 +54,9 @@ for x, y in authors.items():
     author_sizes.append(y)
 
 fig1, ax1 = pyplot.subplots()
-ax1.pie(author_sizes, labels = author_labels)
+ax1.pie(author_sizes, labels=author_labels)
 ax1.set_title("Author Influences", fontweight="bold")
-fig1.savefig("authors.png", bbox_inches='tight')
+fig1.savefig("authors.png", bbox_inches="tight")
 pyplot.close(fig1)
 
 
@@ -68,7 +68,7 @@ for x, y in books.items():
     book_sizes.append(y)
 
 fig2, ax2 = pyplot.subplots()
-ax2.pie(book_sizes, labels = book_labels)
+ax2.pie(book_sizes, labels=book_labels)
 ax2.set_title("Book Influences", fontweight="bold")
-fig2.savefig("books.png", bbox_inches='tight')
+fig2.savefig("books.png", bbox_inches="tight")
 pyplot.close(fig2)
