@@ -27,6 +27,8 @@ Run: `poetry run python 1_formatter.py <directory_name>`
 Pick, choose, and modify sections of the text to be used for module creation.
 Run: `poetry run python 2_pick_and_choose.py <file_name>`
 
+![Pick and Choose Screenshot](/img/2_screenshot.png "Pick and Choose Screenshot")
+
 ### 3_split_and_ner.py
 Splits the files in the given directory in half, and performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
 
