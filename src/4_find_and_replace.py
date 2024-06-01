@@ -198,6 +198,7 @@ for file_name in file_names:
     ner_lines = ner_file_text.splitlines()
 
     for ner_line in ner_lines:
+        logger.info(f"Processing line: [{ner_line}]")
         original_name, __, name_type = ner_line.split("|")
 
         if name_type == "":
