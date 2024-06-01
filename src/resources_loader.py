@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 def load_names(path):
-    logger.debug(path)
+    logger.info(f"Loading names from path: [{path}]")
     name_replacements = OrderedDict()
     file_names = next(walk(path), (None, None, []))[2]  # [] if no file
     file_names.sort()
 
     for filename in file_names:
+        logger.info(f"Loading names from file: [{filename}]")
         if filename.startswith("."):
             continue
 

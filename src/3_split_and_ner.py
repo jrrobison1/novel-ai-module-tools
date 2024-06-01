@@ -43,10 +43,12 @@ for filename in edited_filenames:
 
 ner_source_files = []
 
+logger.info(f"Splitting and NER on files in directory: [{edited_directory}]")
 # Create splits
 for file_name in edited_filenames:
     full_filename = os.path.join(edited_directory, file_name)
     splits = split_file(full_filename)
+    logger.info(f"Splitting file: [{full_filename}]")
 
     if splits["no_stars"] == True:
         file_path = os.path.join(splits_directory, "nosplits_" + file_name)
