@@ -1,11 +1,14 @@
+from collections import OrderedDict
+import logging
 import os
 from os import walk
 import random
-from collections import OrderedDict
+
+logger = logging.getLogger(__name__)
 
 
 def load_names(path):
-    print(path)
+    logger.debug(path)
     name_replacements = OrderedDict()
     file_names = next(walk(path), (None, None, []))[2]  # [] if no file
     file_names.sort()

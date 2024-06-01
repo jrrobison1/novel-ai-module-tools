@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
+import coloredlogs, logging
+from config import *
+from difflib import SequenceMatcher
 import os
+from os import replace, walk
+from resources_loader import load_name_replacements
 import random
 import re
 import sys
-from os import replace, walk
-from resources_loader import load_name_replacements
-from config import *
-from difflib import SequenceMatcher
-import coloredlogs, logging
+
 
 coloredlogs.install(level=LOG_LEVEL, fmt="%(asctime)s %(levelname)s %(message)s")
-logger = logging.getLogger("find_and_replace")
+logger = logging.getLogger(__name__)
 
 try:
     working_directory = sys.argv[1]

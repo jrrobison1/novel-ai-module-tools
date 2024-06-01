@@ -5,7 +5,6 @@ from resources_loader import load_name_recognizers
 
 
 def get_unique_entities(ner_entities):
-    # Create a set to avoid duplicates
     entities = set()
 
     # Add only PERSON entities that start with an uppercase letter
@@ -30,9 +29,11 @@ def perform_ner(file_names, ner_directory, resource_directory, strip_prefixes):
     names = load_name_recognizers()
 
     # Ignore Names
-    with open(os.path.join(resource_directory, "ignore_names.txt")) as f:
-        ignore_names = f.read().splitlines()
-    f.close()
+    try:
+        with open(os.path.join(resource_directory, "ignore_names.txt"), "r") as f:
+            ignore_names = f.read().splitlines()
+    except FileNotFoundError:
+        ignore_names = []
 
     NER = spacy.load(
         NER_MODEL, disable=["tagger", "parser", "attribute_ruler", "lemmatizer"]
@@ -41,6 +42,7 @@ def perform_ner(file_names, ner_directory, resource_directory, strip_prefixes):
     for file_name in file_names:
         with open(file_name, "r") as file:
             data = file.read()
+        file.close()
 
         ner_entities = NER(data)
         unique_entities = get_unique_entities(ner_entities)

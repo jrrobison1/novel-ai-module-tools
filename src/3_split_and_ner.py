@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-import os
-import sys
-from os import walk
-
-from numpy import random
-
-from ner import perform_ner
-from split_file import split_file
 from config import *
+import logging
+from ner import perform_ner
+from numpy import random
+import os
+from os import walk
+from split_file import split_file
+import sys
+
+logger = logging.getLogger(__name__)
 
 
 try:
@@ -48,35 +49,33 @@ for file_name in edited_filenames:
     splits = split_file(full_filename)
 
     if splits["no_stars"] == True:
-        no_splits_file = open(
-            os.path.join(splits_directory, "nosplits_" + file_name), "w"
-        )
-        no_splits_file.write(splits["full_text"])
-        no_splits_file.close()
+        file_path = os.path.join(splits_directory, "nosplits_" + file_name)
+        with open(file_path, "w") as no_splits_file:
+            no_splits_file.write(splits["full_text"])
 
-        print(f"Will perform NER on file: [{no_splits_file.name}]")
+        logger.info(f"Will perform NER on file: [{no_splits_file.name}]")
         ner_source_files.append(no_splits_file.name)
 
     else:
-        first_half_file = open(
-            os.path.join(splits_directory, SPLITS_FIRST_HALF_PREFIX + file_name), "w"
+        first_half_file_path = os.path.join(
+            splits_directory, SPLITS_FIRST_HALF_PREFIX + file_name
         )
-        first_half_file.write(splits["first_half"])
-        first_half_file.close()
+        with open(first_half_file_path, "w") as first_half_file:
+            first_half_file.write(splits["first_half"])
 
-        second_half_file = open(
-            os.path.join(splits_directory, SPLITS_SECOND_HALF_PREFIX + file_name), "w"
+        second_half_file_path = os.path.join(
+            splits_directory, SPLITS_SECOND_HALF_PREFIX + file_name
         )
-        second_half_file.write(splits["second_half"])
-        second_half_file.close()
+        with open(second_half_file_path, "w") as second_half_file:
+            second_half_file.write(splits["second_half"])
 
         random_choice = random.choice([first_half_file.name, second_half_file.name])
-        print(f"Will perform NER on file: [{random_choice}]")
+        logger.info(f"Will perform NER on file: [{random_choice}]")
         ner_source_files.append(random_choice)
 
 perform_ner(
-    ner_source_files,
-    ner_directory,
-    resource_dir,
-    ["nosplits_", SPLITS_FIRST_HALF_PREFIX, SPLITS_SECOND_HALF_PREFIX],
+    file_names=ner_source_files,
+    ner_directory=ner_directory,
+    resource_directory=resource_dir,
+    strip_prefixes=["nosplits_", SPLITS_FIRST_HALF_PREFIX, SPLITS_SECOND_HALF_PREFIX],
 )

@@ -376,6 +376,23 @@ files = [
 ]
 
 [[package]]
+name = "en-core-web-sm"
+version = "3.7.1"
+description = "English pipeline optimized for CPU. Components: tok2vec, tagger, parser, senter, ner, attribute_ruler, lemmatizer."
+optional = false
+python-versions = "*"
+files = [
+    {file = "en_core_web_sm-3.7.1-py3-none-any.whl", hash = "sha256:86cc141f63942d4b2c5fcee06630fd6f904788d2f0ab005cce45aadb8fb73889"},
+]
+
+[package.dependencies]
+spacy = ">=3.7.2,<3.8.0"
+
+[package.source]
+type = "url"
+url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl"
+
+[[package]]
 name = "fonttools"
 version = "4.52.1"
 description = "Tools to manipulate font files"
@@ -1708,4 +1725,4 @@ wasabi = ">=0.9.1,<1.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "502f840286ba7ff295e70ca4160501fb45b443a333b1be3c16f92dd30320f273"
+content-hash = "a325b46a00624182c4d0fb3987bd5361590a022d00e47ea96dfa1e69d0645ce9"
