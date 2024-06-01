@@ -28,16 +28,22 @@ resource_directory = os.path.join(
 )
 
 # Last names ending in s
-with open(os.path.join(resource_directory, "surnames_ending_s.txt")) as f:
-    surnames_ending_s = f.read().splitlines()
-    random.shuffle(surnames_ending_s)
-f.close()
+try:
+    with open(os.path.join(resource_directory, "surnames_ending_s.txt")) as f:
+        surnames_ending_s = f.read().splitlines()
+        random.shuffle(surnames_ending_s)
+    f.close()
+except:
+    surnames_ending_s = []
 
 # Last names ending in x
-with open(os.path.join(resource_directory, "surnames_ending_x.txt")) as f:
-    surnames_ending_x = f.read().splitlines()
-    random.shuffle(surnames_ending_x)
-f.close()
+try:
+    with open(os.path.join(resource_directory, "surnames_ending_x.txt")) as f:
+        surnames_ending_x = f.read().splitlines()
+        random.shuffle(surnames_ending_x)
+    f.close()
+except:
+    surnames_ending_x = []
 
 # Top level names replacement directory
 names_replaced_directory = os.path.join(working_directory, "names_replaced")
