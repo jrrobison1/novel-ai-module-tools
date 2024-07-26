@@ -3,6 +3,7 @@
 import re
 import sys
 from sys import argv
+from typing import List, Tuple
 from config import *
 import logging
 from matplotlib import pyplot
@@ -18,8 +19,8 @@ from PyQt5.QtWidgets import (
     QLabel,
     QGridLayout,
 )
-
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 # Configure logging
 logging.basicConfig(
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 matplotlib.use("qt5agg")
 
 
-def get_score(text, pattern):
+def get_score(text: str, pattern: re.Pattern) -> float:
     """Compute the score based on the pattern match count per 1000 words."""
     match_count = len(pattern.findall(text))
     word_count = len(text.split())
@@ -43,7 +44,7 @@ def get_score(text, pattern):
     return (match_count * 1000) / word_count
 
 
-def get_file(filename):
+def get_file(filename: str) -> str:
     """Read file content."""
     with open(filename) as f:
         return f.read()
@@ -57,7 +58,9 @@ secondary_pattern = re.compile(SECONDARY_PATTERN, re.IGNORECASE)
 
 
 class MatplotlibCanvas(FigureCanvas):
-    def __init__(self, first_section, parent=None):
+    def __init__(self, first_section: str, parent: QWidget = None):
+        self.fig: Figure
+        self.ax: pyplot.Axes
         self.fig, self.ax = self.get_paragraph_scores_figure(first_section)
         super().__init__(self.fig)
         self.setParent(parent)
@@ -65,7 +68,7 @@ class MatplotlibCanvas(FigureCanvas):
 
         self.setMinimumSize(550, 400)
 
-    def plot(self, section_text=None):
+    def plot(self, section_text: str = None) -> None:
         if section_text is not None:
             self.ax.clear()
             paragraphs = section_text.splitlines()
@@ -86,7 +89,7 @@ class MatplotlibCanvas(FigureCanvas):
         self.draw()
 
     @staticmethod
-    def get_paragraph_scores_figure(section_text):
+    def get_paragraph_scores_figure(section_text: str) -> Tuple[Figure, pyplot.Axes]:
         paragraphs = section_text.splitlines()
         paragraph_scores = []
         secondary_scores = []
@@ -108,15 +111,15 @@ class MatplotlibCanvas(FigureCanvas):
 class MainWindow(QMainWindow):
     def __init__(
         self,
-        sections,
-        current_full_text,
-        book_original_primary_score,
-        book_original_secondary_score,
+        sections: List[str],
+        current_full_text: str,
+        book_original_primary_score: float,
+        book_original_secondary_score: float,
     ):
         super().__init__()
-        self.sections = sections
-        self.current_full_text = current_full_text
-        self.section_index = 0
+        self.sections: List[str] = sections
+        self.current_full_text: str = current_full_text
+        self.section_index: int = 0
 
         self.setWindowTitle("Pick and Choose")
         self.setGeometry(100, 100, 800, 600)
@@ -190,21 +193,21 @@ class MainWindow(QMainWindow):
         keep_button.clicked.connect(self.on_keep_button_clicked)
         trash_button.clicked.connect(self.on_trash_button_clicked)
 
-    def on_keep_button_clicked(self):
+    def on_keep_button_clicked(self) -> None:
         logger.info("Keep button clicked")
         logger.info(f"Section index: {self.section_index}")
         logger.info(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = self.text_area.toPlainText()
         self.handle_button_click()
 
-    def on_trash_button_clicked(self):
+    def on_trash_button_clicked(self) -> None:
         logger.info("Trash button clicked")
         logger.info(f"Section index: {self.section_index}")
         logger.info(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = "***"
         self.handle_button_click()
 
-    def handle_button_click(self):
+    def handle_button_click(self) -> None:
         logger.info("Handling button click")
         self.section_index += 1
         logger.info(f"Section index: {self.section_index}")
@@ -237,14 +240,14 @@ class MainWindow(QMainWindow):
         self.canvas.plot(self.sections[self.section_index])
         self.text_area.setText(self.get_section_with_tabs())
 
-    def get_section_with_tabs(self):
+    def get_section_with_tabs(self) -> str:
         paragraphs = self.sections[self.section_index].splitlines()
         section_with_tabs = "\n\n".join(f"\t{paragraph}" for paragraph in paragraphs)
         return f"\t{section_with_tabs.strip()}"
 
-    def update_temp_full_text(self):
+    def update_temp_full_text(self) -> None:
         self.current_full_text = ""
-        for section in sections:
+        for section in self.sections:
             if len(section.split()) > 1:
                 self.current_full_text += (
                     section.strip()
@@ -254,19 +257,19 @@ class MainWindow(QMainWindow):
                     + "\n***\n"
                 )
 
-    def get_book_primary_score(self):
+    def get_book_primary_score(self) -> float:
         return get_score(self.current_full_text, primary_pattern)
 
-    def get_book_secondary_score(self):
+    def get_book_secondary_score(self) -> float:
         return get_score(self.current_full_text, secondary_pattern)
 
-    def get_section_primary_score(self):
+    def get_section_primary_score(self) -> float:
         return get_score(self.sections[self.section_index], primary_pattern)
 
-    def get_section_secondary_score(self):
+    def get_section_secondary_score(self) -> float:
         return get_score(self.sections[self.section_index], secondary_pattern)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent) -> None:
         """Handle the window close event."""
         logger.info("Closing the application")
         # Write file out
@@ -278,14 +281,14 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    filename = argv[1]
-    file_text = get_file(filename)
-    sections = file_text.split("***")
+    filename: str = argv[1]
+    file_text: str = get_file(filename)
+    sections: List[str] = file_text.split("***")
 
-    current_full_text = file_text
+    current_full_text: str = file_text
 
-    book_original_primary_score = get_score(file_text, primary_pattern)
-    book_original_secondary_score = get_score(file_text, secondary_pattern)
+    book_original_primary_score: float = get_score(file_text, primary_pattern)
+    book_original_secondary_score: float = get_score(file_text, secondary_pattern)
 
     app = QApplication(sys.argv)
     window = MainWindow(
