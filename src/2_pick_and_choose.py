@@ -16,9 +16,11 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QLabel,
     QGridLayout,
+    QMessageBox,
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import traceback
 
 # Configure logging
 logging.basicConfig(
@@ -70,9 +72,20 @@ def get_file(filename: str) -> str:
 
     Returns:
         str: The content of the file.
+
+    Raises:
+        FileNotFoundError: If the file is not found.
+        IOError: If there's an error reading the file.
     """
-    with open(filename) as f:
-        return f.read()
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        logger.error(f"File not found: {filename}")
+        raise
+    except IOError as e:
+        logger.error(f"Error reading file {filename}: {e}")
+        raise
 
 
 PRIMARY_PATTERN = r"\sthe\s"  # Replace with your actual pattern
@@ -281,37 +294,47 @@ class MainWindow(QMainWindow):
         Common logic for handling button clicks (Keep or Trash).
         Updates scores, moves to the next section, and handles end-of-sections case.
         """
-        logger.info("Handling button click")
-        self.section_index += 1
-        logger.info(f"Section index: {self.section_index}")
-        self.update_temp_full_text()
+        try:
+            logger.info("Handling button click")
+            self.section_index += 1
+            logger.info(f"Section index: {self.section_index}")
+            self.update_temp_full_text()
 
-        if self.section_index > len(self.sections) - 1:
-            logger.info(f"End of sections; writing out to file: {self.output_filename}")
-            logger.info(f"section_index: [{self.section_index}]")
-            logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
-            # Write file out
-            with open(self.output_filename, "w") as f:
-                f.write(self.current_full_text)
-            f.close()
-            QApplication.quit()
-            exit(0)
+            if self.section_index > len(self.sections) - 1:
+                logger.info(f"End of sections; writing out to file: {self.output_filename}")
+                logger.info(f"section_index: [{self.section_index}]")
+                logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
+                # Write file out
+                try:
+                    with open(self.output_filename, "w", encoding='utf-8') as f:
+                        f.write(self.current_full_text)
+                except IOError as e:
+                    logger.error(f"Error writing to file {self.output_filename}: {e}")
+                    QMessageBox.critical(self, "Error", f"Failed to write to file: {e}")
+                else:
+                    QApplication.quit()
+                    sys.exit(0)
 
-        book_primary_score = self.get_book_primary_score()
-        self.book_primary_label.setText(
-            f"Primary: {book_primary_score:.2f} ({(book_primary_score - book_original_primary_score):.2f})"
-        )
-        book_secondary_score = self.get_book_secondary_score()
-        self.book_secondary_label.setText(
-            f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - book_original_secondary_score):.2f})"
-        )
-        section_primary_score = self.get_section_primary_score()
-        self.primary_label.setText(f"Primary: {section_primary_score:.2f}")
-        section_secondary_score = self.get_section_secondary_score()
-        self.secondary_label.setText(f"Secondary: {section_secondary_score:.2f}")
+            book_primary_score = self.get_book_primary_score()
+            self.book_primary_label.setText(
+                f"Primary: {book_primary_score:.2f} ({(book_primary_score - book_original_primary_score):.2f})"
+            )
+            book_secondary_score = self.get_book_secondary_score()
+            self.book_secondary_label.setText(
+                f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - book_original_secondary_score):.2f})"
+            )
+            section_primary_score = self.get_section_primary_score()
+            self.primary_label.setText(f"Primary: {section_primary_score:.2f}")
+            section_secondary_score = self.get_section_secondary_score()
+            self.secondary_label.setText(f"Secondary: {section_secondary_score:.2f}")
 
-        self.canvas.plot(self.sections[self.section_index])
-        self.text_area.setText(self.get_section_with_tabs())
+            self.canvas.plot(self.sections[self.section_index])
+            self.text_area.setText(self.get_section_with_tabs())
+
+        except Exception as e:
+            logger.error(f"Unexpected error in handle_button_click: {e}")
+            logger.error(traceback.format_exc())
+            QMessageBox.critical(self, "Error", f"An unexpected error occurred: {e}")
 
     def get_section_with_tabs(self) -> str:
         """
@@ -382,35 +405,48 @@ class MainWindow(QMainWindow):
             event: The close event.
         """
         logger.info(f"Closing the application, writing to: {self.output_filename}")
-        # Write file out
-        with open(self.output_filename, "w") as f:
-            f.write(self.current_full_text)
-        QApplication.quit()
-        event.accept()
+        try:
+            with open(self.output_filename, "w", encoding='utf-8') as f:
+                f.write(self.current_full_text)
+        except IOError as e:
+            logger.error(f"Error writing to file {self.output_filename}: {e}")
+            QMessageBox.critical(self, "Error", f"Failed to write to file: {e}")
+        finally:
+            QApplication.quit()
+            event.accept()
 
 
 if __name__ == "__main__":
-    if len(argv) != 3:
+    try:
+        if len(argv) != 3:
+            raise ValueError("Incorrect number of arguments")
+
+        input_filename: str = argv[1]
+        output_filename: str = argv[2]
+        file_text: str = get_file(input_filename)
+        sections: List[str] = file_text.split(SECTION_SEPARATOR)
+
+        current_full_text: str = file_text
+
+        book_original_primary_score: float = get_score(file_text, primary_pattern)
+        book_original_secondary_score: float = get_score(file_text, secondary_pattern)
+
+        app = QApplication(sys.argv)
+        window = MainWindow(
+            sections,
+            current_full_text,
+            book_original_primary_score,
+            book_original_secondary_score,
+            output_filename,
+        )
+        window.show()
+        sys.exit(app.exec_())
+    except ValueError as e:
+        print(f"Error: {e}")
         print("Usage: python 2_pick_and_choose.py <input_filename> <output_filename>")
         sys.exit(1)
-
-    input_filename: str = argv[1]
-    output_filename: str = argv[2]
-    file_text: str = get_file(input_filename)
-    sections: List[str] = file_text.split(SECTION_SEPARATOR)
-
-    current_full_text: str = file_text
-
-    book_original_primary_score: float = get_score(file_text, primary_pattern)
-    book_original_secondary_score: float = get_score(file_text, secondary_pattern)
-
-    app = QApplication(sys.argv)
-    window = MainWindow(
-        sections,
-        current_full_text,
-        book_original_primary_score,
-        book_original_secondary_score,
-        output_filename,
-    )
-    window.show()
-    sys.exit(app.exec_())
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        logger.error(f"Unexpected error in main: {e}")
+        logger.error(traceback.format_exc())
+        sys.exit(1)
