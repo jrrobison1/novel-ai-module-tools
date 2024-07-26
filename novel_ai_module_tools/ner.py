@@ -1,7 +1,7 @@
 import os
 import spacy
-from config import *
-from resources_loader import load_name_recognizers
+from novel_ai_module_tools.config import *
+from novel_ai_module_tools.resources_loader import load_name_recognizers
 
 
 def get_unique_entities(ner_entities):
