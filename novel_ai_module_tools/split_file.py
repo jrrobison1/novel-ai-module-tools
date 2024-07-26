@@ -56,11 +56,11 @@ def split_file(file_name: str) -> Dict[str, Union[str, bool]]:
         # Get index of first occurence of *** in second half:
         star_index = get_star_index(input_text)
 
-        if star_index <= 0:
+        if star_index == -1:
             return {FULL_TEXT: input_text, NO_STARS: True}
 
-        first_half = input_text[: star_index - 1]
-        second_half = input_text[star_index + 1 :]
+        first_half = input_text[:star_index].strip()
+        second_half = input_text[star_index + len(STAR_SEPARATOR) :].strip()
 
         ret_data: Dict[str, Union[str, bool]] = {
             FIRST_HALF: first_half,
