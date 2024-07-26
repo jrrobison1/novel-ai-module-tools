@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import re
 import sys
 from sys import argv
@@ -18,7 +16,6 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QLabel,
     QGridLayout,
-    QCloseEvent,
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -163,6 +160,7 @@ class MainWindow(QMainWindow):
         current_full_text: str,
         book_original_primary_score: float,
         book_original_secondary_score: float,
+        output_filename: str,
     ):
         """
         Initialize the MainWindow.
@@ -172,11 +170,13 @@ class MainWindow(QMainWindow):
             current_full_text (str): The current full text of the book.
             book_original_primary_score (float): The original primary score of the book.
             book_original_secondary_score (float): The original secondary score of the book.
+            output_filename (str): The name of the file to write the output to.
         """
         super().__init__()
         self.sections: List[str] = sections
         self.current_full_text: str = current_full_text
         self.section_index: int = 0
+        self.output_filename = output_filename
 
         self.setWindowTitle("Pick and Choose")
         self.setGeometry(100, 100, 800, 600)
@@ -277,11 +277,11 @@ class MainWindow(QMainWindow):
         self.update_temp_full_text()
 
         if self.section_index > len(self.sections) - 1:
-            logger.info(f"End of sections; writing out to file")
+            logger.info(f"End of sections; writing out to file: {self.output_filename}")
             logger.info(f"section_index: [{self.section_index}]")
             logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
             # Write file out
-            with open("write_out.txt", "w") as f:
+            with open(self.output_filename, "w") as f:
                 f.write(self.current_full_text)
             f.close()
             QApplication.quit()
@@ -363,26 +363,30 @@ class MainWindow(QMainWindow):
         """
         return get_score(self.sections[self.section_index], secondary_pattern)
 
-    def closeEvent(self, event: QCloseEvent) -> None:
+    def closeEvent(self, event) -> None:
         """
         Handle the window close event.
         Writes the current full text to a file before closing.
 
         Args:
-            event (QCloseEvent): The close event.
+            event: The close event.
         """
-        logger.info("Closing the application")
+        logger.info(f"Closing the application, writing to: {self.output_filename}")
         # Write file out
-        with open("write_out.txt", "w") as f:
+        with open(self.output_filename, "w") as f:
             f.write(self.current_full_text)
-        f.close()
         QApplication.quit()
         event.accept()
 
 
 if __name__ == "__main__":
-    filename: str = argv[1]
-    file_text: str = get_file(filename)
+    if len(argv) != 3:
+        print("Usage: python 2_pick_and_choose.py <input_filename> <output_filename>")
+        sys.exit(1)
+
+    input_filename: str = argv[1]
+    output_filename: str = argv[2]
+    file_text: str = get_file(input_filename)
     sections: List[str] = file_text.split("***")
 
     current_full_text: str = file_text
@@ -396,6 +400,7 @@ if __name__ == "__main__":
         current_full_text,
         book_original_primary_score,
         book_original_secondary_score,
+        output_filename,
     )
     window.show()
     sys.exit(app.exec_())
