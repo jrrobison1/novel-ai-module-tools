@@ -1,11 +1,26 @@
 import os
+from typing import Dict, List, Set, TextIO
+from pathlib import Path
+
 import spacy
+from spacy.language import Language
+from spacy.tokens import Doc
+
 from novel_ai_module_tools.config import *
 from novel_ai_module_tools.resources_loader import load_name_recognizers
 
 
-def get_unique_entities(ner_entities):
-    entities = set()
+def get_unique_entities(ner_entities: Doc) -> Set[str]:
+    """
+    Extract unique PERSON entities from a spaCy Doc object.
+
+    Args:
+        ner_entities (Doc): A spaCy Doc object containing named entities.
+
+    Returns:
+        Set[str]: A set of unique person names that start with an uppercase letter.
+    """
+    entities: Set[str] = set()
 
     # Add only PERSON entities that start with an uppercase letter
     for word in ner_entities.ents:
@@ -17,36 +32,67 @@ def get_unique_entities(ner_entities):
     return entities
 
 
-def get_ner_write_file(ner_directory, file_name, strip_prefixes):
-    base_file_name = os.path.basename(file_name)
+def get_ner_write_file(
+    ner_directory: Path, file_name: Path, strip_prefixes: List[str]
+) -> TextIO:
+    """
+    Create and open a file for writing NER results.
+
+    Args:
+        ner_directory (Path): The directory where the output file will be created.
+        file_name (Path): The original file path.
+        strip_prefixes (List[str]): Prefixes to be removed from the file name.
+
+    Returns:
+        TextIO: An open file object for writing NER results.
+    """
+    base_file_name = file_name.name
     for strip_prefix in strip_prefixes:
         base_file_name = base_file_name.removeprefix(strip_prefix)
 
-    return open(os.path.join(ner_directory, NER_FILE_PREFIX + base_file_name), "w")
+    return (ner_directory / f"{NER_FILE_PREFIX}{base_file_name}").open("w")
 
 
-def perform_ner(file_names, ner_directory, resource_directory, strip_prefixes):
-    names = load_name_recognizers()
+def perform_ner(
+    file_names: List[Path],
+    ner_directory: Path,
+    resource_directory: Path,
+    strip_prefixes: List[str],
+) -> None:
+    """
+    Perform Named Entity Recognition (NER) on a list of files and write the results.
+
+    Args:
+        file_names (List[Path]): List of file paths to process.
+        ner_directory (Path): Directory to save the NER results.
+        resource_directory (Path): Directory containing resource files.
+        strip_prefixes (List[str]): Prefixes to be removed from output file names.
+
+    Returns:
+        None
+    """
+    names: Dict[str, List[str]] = load_name_recognizers()
 
     # Ignore Names
     try:
-        with open(os.path.join(resource_directory, "ignore_names.txt"), "r") as f:
-            ignore_names = f.read().splitlines()
+        ignore_names = (
+            (resource_directory / "ignore_names.txt").read_text().splitlines()
+        )
     except FileNotFoundError:
         ignore_names = []
 
-    NER = spacy.load(
+    NER: Language = spacy.load(
         NER_MODEL, disable=["tagger", "parser", "attribute_ruler", "lemmatizer"]
     )
 
     for file_name in file_names:
-        with open(file_name, "r") as file:
-            data = file.read()
-        file.close()
+        data: str = file_name.read_text()
 
-        ner_entities = NER(data)
-        unique_entities = get_unique_entities(ner_entities)
-        output_file = get_ner_write_file(ner_directory, file_name, strip_prefixes)
+        ner_entities: Doc = NER(data)
+        unique_entities: Set[str] = get_unique_entities(ner_entities)
+        output_file: TextIO = get_ner_write_file(
+            ner_directory, file_name, strip_prefixes
+        )
 
         for name in sorted(unique_entities):
             if name[:-1] in unique_entities:  # Ignore plurals of the same name
@@ -56,7 +102,7 @@ def perform_ner(file_names, ner_directory, resource_directory, strip_prefixes):
             ):  # Ignore possessives
                 continue
 
-            write_out = name + "|PERSON|"
+            write_out = f"{name}|PERSON|"
 
             for name_type, name_list in names.items():
                 if name in name_list:
@@ -65,5 +111,4 @@ def perform_ner(file_names, ner_directory, resource_directory, strip_prefixes):
 
             output_file.write(write_out + "\n")
 
-        file.close()
         output_file.close()
