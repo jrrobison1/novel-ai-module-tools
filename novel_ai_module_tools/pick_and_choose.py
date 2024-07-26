@@ -2,7 +2,7 @@ import re
 import sys
 from sys import argv
 from typing import List, Tuple
-from config import *
+from novel_ai_module_tools.config import *
 import logging
 from matplotlib import pyplot
 import matplotlib
@@ -22,7 +22,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import traceback
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -58,7 +57,7 @@ def get_score(text: str, pattern: re.Pattern) -> float:
     match_count = len(pattern.findall(text))
     word_count = len(text.split())
     if word_count < MATCH_WORD_COUND_THRESHOLD:
-        return 0
+        return 0.0
 
     return (match_count * 1000) / word_count
 
@@ -200,6 +199,8 @@ class MainWindow(QMainWindow):
         self.current_full_text: str = current_full_text
         self.section_index: int = 0
         self.output_filename = output_filename
+        self.book_original_primary_score = book_original_primary_score
+        self.book_original_secondary_score = book_original_secondary_score
 
         self.setWindowTitle(WINDOW_TITLE)
         self.setGeometry(*WINDOW_GEOMETRY)
@@ -229,11 +230,11 @@ class MainWindow(QMainWindow):
 
         book_primary_score = self.get_book_primary_score()
         self.book_primary_label.setText(
-            f"Primary: {book_primary_score:.2f} ({(book_primary_score - book_original_primary_score):.2f})"
+            f"Primary: {book_primary_score:.2f} ({(book_primary_score - self.book_original_primary_score):.2f})"
         )
         book_secondary_score = self.get_book_secondary_score()
         self.book_secondary_label.setText(
-            f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - book_original_secondary_score):.2f})"
+            f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - self.book_original_secondary_score):.2f})"
         )
         section_primary_score = self.get_section_primary_score()
         self.primary_label.setText(f"Primary: {section_primary_score:.2f}")
@@ -317,11 +318,11 @@ class MainWindow(QMainWindow):
 
             book_primary_score = self.get_book_primary_score()
             self.book_primary_label.setText(
-                f"Primary: {book_primary_score:.2f} ({(book_primary_score - book_original_primary_score):.2f})"
+                f"Primary: {book_primary_score:.2f} ({(book_primary_score - self.book_original_primary_score):.2f})"
             )
             book_secondary_score = self.get_book_secondary_score()
             self.book_secondary_label.setText(
-                f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - book_original_secondary_score):.2f})"
+                f"Secondary: {book_secondary_score:.2f} ({(book_secondary_score - self.book_original_secondary_score):.2f})"
             )
             section_primary_score = self.get_section_primary_score()
             self.primary_label.setText(f"Primary: {section_primary_score:.2f}")

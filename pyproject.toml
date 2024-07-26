@@ -18,6 +18,9 @@ coloredlogs = "^15.0.1"
 [tool.poetry.extras]
 #spacy_en_core_web_sm = ["spacy-en-core-web-sm"]
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
