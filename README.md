@@ -14,19 +14,19 @@ This project uses Poetry for dependency management.
 ## The tools
 There are five tools, prefixed with the number in the order in which they should be run.
 
-### 1_formatter.py
+### formatter.py
 Formats the text in the way NovelAI likes. Each paragraph on a separate line. Fancy quotes into regular quotes. Smart ellipsis into simple txt version. Dashes replaced with em's. Simple section/chapter headings replaced with "***".
 
-Formats all text files in the directory.
+Formats the provided file, or formats all .txt files in the directory. Formatted 
+files saved with an "fmtd" suffix.
 
-The directory passes to `1_formatter` is expected to have its txt files in a directory called `edited`. The files are modified in-place.
+Run: `poetry run python formatter.py <file_name>`
+or `poetry run python formatter.py <directory_name>`
 
-Run: `poetry run python 1_formatter.py <directory_name>`
-
-### 2_pick_and_choose.py
+### pick_and_choose.py
 Pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json.
 
-Run: `poetry run python 2_pick_and_choose.py <file_name>`
+Run: `poetry run python pick_and_choose.py <file_name>`
 
 ![Pick and Choose Screenshot](/img/2_screenshot.png "Pick and Choose Screenshot")
 

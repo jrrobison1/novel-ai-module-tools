@@ -6,17 +6,15 @@ import sys
 logger = logging.getLogger(__name__)
 
 """
-1_formatter.py
+formatter.py
 
 This script processes text files in a specified directory, applying various formatting
 rules to standardize and clean up the text content.
 
 Usage:
-    python 1_formatter.py <directory_path>
-    python 1_formatter.py <file_path>
+    python formatter.py <directory_path>
+    python formatter.py <file_path>
 
-The script expects an 'edited' subdirectory within the specified directory,
-containing the files to be processed.
 """
 
 import logging
@@ -73,19 +71,31 @@ def process_file(file_path):
             source_text = re.sub(r"[‘’`]", "'", source_text)
 
             # Replace different dash/hyphen patterns
-            source_text = re.sub(r" --- ", " – ", source_text)
-            source_text = re.sub(r"---", "—", source_text)
+            source_text = re.sub(r" --- ", " - ", source_text)  # Change to hyphen
+            source_text = re.sub(r"---", "–", source_text)  # Change to en dash
 
             # Replace ellipsis variations with standard ellipsis
             source_text = re.sub(r"…|\s\.\s\.\s\.", "...", source_text)
             source_text = re.sub(r"\s\.\.\.", "...", source_text)
 
+            # Standardize section/chapter markers
+            source_text = re.sub(r"CHAPTER \d+$", "***", source_text, flags=re.MULTILINE)
+            
+
+            
+
+            # Reduce multiple "***" lines to a single one
+            source_text = re.sub(
+                r"(^\*\*\*$\n){2,}", "***\n", source_text, flags=re.MULTILINE
+            )
+
             # Replace multiple newlines with section separator
             source_text = re.sub(r"\n{3,}", "\n***\n", source_text)
 
-            # Standardize section/chapter markers
-            source_text = re.sub(r"^CHAPTER \d+", "***", source_text, flags=re.MULTILINE)
             source_text = re.sub(r"\*{4,}", "***", source_text)
+
+            # Remove empty lines
+            source_text = re.sub(r"^\s*$", "", source_text, flags=re.MULTILINE)
 
             # Trim leading and trailing whitespace
             source_text = re.sub(r"^\s+|\s+$", "", source_text, flags=re.MULTILINE)
@@ -93,13 +103,8 @@ def process_file(file_path):
             # Remove lines with only digits
             source_text = re.sub(r"^\d+$", "", source_text, flags=re.MULTILINE)
 
-            # Reduce multiple "***" lines to a single one
-            source_text = re.sub(
-                r"(^\*\*\*$\n){2,}", "***\n", source_text, flags=re.MULTILINE
-            )
+            
 
-            # Remove empty lines
-            source_text = re.sub(r"^\s*$", "", source_text, flags=re.MULTILINE)
 
             # Generate the new file name with "_fmtd" suffix
             file_name, file_extension = os.path.splitext(file_path)

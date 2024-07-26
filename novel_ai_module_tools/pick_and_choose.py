@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 matplotlib.use("qt5agg")
 
-# Add these constants at the top of the file, after imports
 WINDOW_TITLE = "Pick and Choose"
 WINDOW_GEOMETRY = (100, 100, 800, 600)
 TEXT_AREA_MIN_SIZE = (800, 500)
