@@ -191,22 +191,35 @@ class MainWindow(QMainWindow):
         trash_button.clicked.connect(self.on_trash_button_clicked)
 
     def on_keep_button_clicked(self):
+        logger.info("Keep button clicked")
+        logger.info(f"Section index: {self.section_index}")
+        logger.info(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = self.text_area.toPlainText()
         self.handle_button_click()
 
     def on_trash_button_clicked(self):
+        logger.info("Trash button clicked")
+        logger.info(f"Section index: {self.section_index}")
+        logger.info(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = "***"
         self.handle_button_click()
 
     def handle_button_click(self):
+        logger.info("Handling button click")
         self.section_index += 1
+        logger.info(f"Section index: {self.section_index}")
         self.update_temp_full_text()
 
         if self.section_index > len(self.sections) - 1:
+            logger.info(f"End of sections; writing out to file")
+            logger.info(f"section_index: [{self.section_index}]")
+            logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
             # Write file out
             with open("write_out.txt", "w") as f:
                 f.write(self.current_full_text)
             f.close()
+            QApplication.quit()
+            exit(0)
 
         book_primary_score = self.get_book_primary_score()
         self.book_primary_label.setText(

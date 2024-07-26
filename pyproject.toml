@@ -13,10 +13,10 @@ matplotlib = "^3.9.0"
 pyqt5 = "^5.15.10"
 spacy = "^3.7.4"
 coloredlogs = "^15.0.1"
-spacy-en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl", optional = true }
+#spacy-en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl", optional = true }
 
 [tool.poetry.extras]
-spacy_en_core_web_sm = ["spacy-en-core-web-sm"]
+#spacy_en_core_web_sm = ["spacy-en-core-web-sm"]
 
 [build-system]
 requires = ["poetry-core"]
