@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QLabel,
     QGridLayout,
+    QCloseEvent,
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -35,7 +36,16 @@ matplotlib.use("qt5agg")
 
 
 def get_score(text: str, pattern: re.Pattern) -> float:
-    """Compute the score based on the pattern match count per 1000 words."""
+    """
+    Compute the score based on the pattern match count per 1000 words.
+
+    Args:
+        text (str): The text to analyze.
+        pattern (re.Pattern): The regex pattern to match.
+
+    Returns:
+        float: The score, or 0 if the word count is below the threshold.
+    """
     match_count = len(pattern.findall(text))
     word_count = len(text.split())
     if word_count < MATCH_WORD_COUND_THRESHOLD:
@@ -45,7 +55,15 @@ def get_score(text: str, pattern: re.Pattern) -> float:
 
 
 def get_file(filename: str) -> str:
-    """Read file content."""
+    """
+    Read and return the content of a file.
+
+    Args:
+        filename (str): The path to the file to be read.
+
+    Returns:
+        str: The content of the file.
+    """
     with open(filename) as f:
         return f.read()
 
@@ -58,7 +76,18 @@ secondary_pattern = re.compile(SECONDARY_PATTERN, re.IGNORECASE)
 
 
 class MatplotlibCanvas(FigureCanvas):
+    """
+    A custom canvas for displaying matplotlib figures in a PyQt5 application.
+    """
+
     def __init__(self, first_section: str, parent: QWidget = None):
+        """
+        Initialize the MatplotlibCanvas.
+
+        Args:
+            first_section (str): The initial text section to plot.
+            parent (QWidget, optional): The parent widget. Defaults to None.
+        """
         self.fig: Figure
         self.ax: pyplot.Axes
         self.fig, self.ax = self.get_paragraph_scores_figure(first_section)
@@ -69,6 +98,12 @@ class MatplotlibCanvas(FigureCanvas):
         self.setMinimumSize(550, 400)
 
     def plot(self, section_text: str = None) -> None:
+        """
+        Plot or update the graph with new section text.
+
+        Args:
+            section_text (str, optional): The new section text to plot. If None, just redraws the existing plot.
+        """
         if section_text is not None:
             self.ax.clear()
             paragraphs = section_text.splitlines()
@@ -90,6 +125,15 @@ class MatplotlibCanvas(FigureCanvas):
 
     @staticmethod
     def get_paragraph_scores_figure(section_text: str) -> Tuple[Figure, pyplot.Axes]:
+        """
+        Create a figure with plots of primary and secondary scores for each paragraph.
+
+        Args:
+            section_text (str): The text section to analyze.
+
+        Returns:
+            Tuple[Figure, pyplot.Axes]: The created figure and its axes.
+        """
         paragraphs = section_text.splitlines()
         paragraph_scores = []
         secondary_scores = []
@@ -109,6 +153,10 @@ class MatplotlibCanvas(FigureCanvas):
 
 
 class MainWindow(QMainWindow):
+    """
+    The main application window for the Pick and Choose tool.
+    """
+
     def __init__(
         self,
         sections: List[str],
@@ -116,6 +164,15 @@ class MainWindow(QMainWindow):
         book_original_primary_score: float,
         book_original_secondary_score: float,
     ):
+        """
+        Initialize the MainWindow.
+
+        Args:
+            sections (List[str]): List of text sections to process.
+            current_full_text (str): The current full text of the book.
+            book_original_primary_score (float): The original primary score of the book.
+            book_original_secondary_score (float): The original secondary score of the book.
+        """
         super().__init__()
         self.sections: List[str] = sections
         self.current_full_text: str = current_full_text
@@ -194,6 +251,7 @@ class MainWindow(QMainWindow):
         trash_button.clicked.connect(self.on_trash_button_clicked)
 
     def on_keep_button_clicked(self) -> None:
+        """Handle the 'Keep' button click event."""
         logger.info("Keep button clicked")
         logger.info(f"Section index: {self.section_index}")
         logger.info(f"Sections length: {len(self.sections)}")
@@ -201,6 +259,7 @@ class MainWindow(QMainWindow):
         self.handle_button_click()
 
     def on_trash_button_clicked(self) -> None:
+        """Handle the 'Trash' button click event."""
         logger.info("Trash button clicked")
         logger.info(f"Section index: {self.section_index}")
         logger.info(f"Sections length: {len(self.sections)}")
@@ -208,6 +267,10 @@ class MainWindow(QMainWindow):
         self.handle_button_click()
 
     def handle_button_click(self) -> None:
+        """
+        Common logic for handling button clicks (Keep or Trash).
+        Updates scores, moves to the next section, and handles end-of-sections case.
+        """
         logger.info("Handling button click")
         self.section_index += 1
         logger.info(f"Section index: {self.section_index}")
@@ -241,11 +304,18 @@ class MainWindow(QMainWindow):
         self.text_area.setText(self.get_section_with_tabs())
 
     def get_section_with_tabs(self) -> str:
+        """
+        Format the current section text with tabs for better readability.
+
+        Returns:
+            str: The formatted section text.
+        """
         paragraphs = self.sections[self.section_index].splitlines()
         section_with_tabs = "\n\n".join(f"\t{paragraph}" for paragraph in paragraphs)
         return f"\t{section_with_tabs.strip()}"
 
     def update_temp_full_text(self) -> None:
+        """Update the current full text based on kept sections."""
         self.current_full_text = ""
         for section in self.sections:
             if len(section.split()) > 1:
@@ -258,19 +328,49 @@ class MainWindow(QMainWindow):
                 )
 
     def get_book_primary_score(self) -> float:
+        """
+        Calculate the primary score for the entire book.
+
+        Returns:
+            float: The primary score.
+        """
         return get_score(self.current_full_text, primary_pattern)
 
     def get_book_secondary_score(self) -> float:
+        """
+        Calculate the secondary score for the entire book.
+
+        Returns:
+            float: The secondary score.
+        """
         return get_score(self.current_full_text, secondary_pattern)
 
     def get_section_primary_score(self) -> float:
+        """
+        Calculate the primary score for the current section.
+
+        Returns:
+            float: The primary score.
+        """
         return get_score(self.sections[self.section_index], primary_pattern)
 
     def get_section_secondary_score(self) -> float:
+        """
+        Calculate the secondary score for the current section.
+
+        Returns:
+            float: The secondary score.
+        """
         return get_score(self.sections[self.section_index], secondary_pattern)
 
     def closeEvent(self, event: QCloseEvent) -> None:
-        """Handle the window close event."""
+        """
+        Handle the window close event.
+        Writes the current full text to a file before closing.
+
+        Args:
+            event (QCloseEvent): The close event.
+        """
         logger.info("Closing the application")
         # Write file out
         with open("write_out.txt", "w") as f:
