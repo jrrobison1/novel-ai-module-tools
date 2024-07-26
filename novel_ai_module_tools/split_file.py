@@ -1,43 +1,75 @@
-# Find first occurence of the chapter marker "***" substring
-# which occurs after the midway point of the input string
-import os
+import logging
+from typing import Dict, Union
+
+STAR_SEPARATOR = "***"
+FIRST_HALF = "first_half"
+SECOND_HALF = "second_half"
+NO_STARS = "no_stars"
+FULL_TEXT = "full_text"
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
-def get_star_index(input_text):
-    print("String length: " + str(len(input_text)))
+def get_star_index(input_text: str) -> int:
+    """
+    Find the index of the first occurrence of '***' in the second half of the input text.
+
+    Args:
+        input_text (str): The input text to search.
+
+    Returns:
+        int: The index of '***' in the second half of the text, or -1 if not found.
+    """
+    logger.info(f"String length: {len(input_text)}")
     midway_index = int(len(input_text) / 2)
-    print("Midway index: " + str(midway_index))
+    logger.info(f"Midway index: {midway_index}")
 
     # Get index of first occurence of *** in second half:
-    star_index = input_text.find("***", midway_index)
-    print("Star index: " + str(star_index))
+    star_index = input_text.find(STAR_SEPARATOR, midway_index)
+    logger.info(f"Star index: {star_index}")
 
     return star_index
 
 
-def split_file(file_name):
+def split_file(file_name: str) -> Dict[str, Union[str, bool]]:
+    """
+    Read a file and split its content based on the '***' separator.
+
+    Args:
+        file_name (str): The name of the file to process.
+
+    Returns:
+        Dict[str, Union[str, bool]]: A dictionary containing:
+            - 'first_half': The content before '***' (if found)
+            - 'second_half': The content after '***' (if found)
+            - 'no_stars': Boolean indicating if '***' was not found
+            - 'full_text': The entire content of the file
+            - 'ERROR': Error message if an exception occurred
+    """
     try:
         with open(file_name, "r") as input_file:
             input_text = input_file.read()
-        input_file.close()
 
         # Get index of first occurence of *** in second half:
         star_index = get_star_index(input_text)
 
         if star_index <= 0:
-            return {"full_text": input_text, "no_stars": True}
+            return {FULL_TEXT: input_text, NO_STARS: True}
 
         first_half = input_text[: star_index - 1]
         second_half = input_text[star_index + 1 :]
 
-        ret_data = {
-            "first_half": first_half,
-            "second_half": second_half,
-            "no_stars": False,
-            "full_text": input_text,
+        ret_data: Dict[str, Union[str, bool]] = {
+            FIRST_HALF: first_half,
+            SECOND_HALF: second_half,
+            NO_STARS: False,
+            FULL_TEXT: input_text,
         }
 
         return ret_data
-    except:
-        print("ERROR: " + file_name)
-        return {"ERRROR": "ERROR"}
+    except Exception as e:
+        logger.error(f"Error processing file {file_name}: {str(e)}")
+        return {"ERROR": str(e)}
