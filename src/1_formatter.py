@@ -2,7 +2,6 @@ import logging
 import os
 import re
 import sys
-from os import walk
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +13,7 @@ rules to standardize and clean up the text content.
 
 Usage:
     python 1_formatter.py <directory_path>
+    python 1_formatter.py <file_path>
 
 The script expects an 'edited' subdirectory within the specified directory,
 containing the files to be processed.
@@ -30,40 +30,43 @@ logger = logging.getLogger(__name__)
 
 def format_files():
     """
-    Process and format text files in the specified directory.
+    Process and format text files in the specified directory or a single file.
 
-    This function applies various text formatting rules, including:
-    - Replacing fancy quotes with regular quotes
-    - Standardizing dashes and hyphens
-    - Normalizing ellipsis usage
-    - Replacing multiple newlines with section separators
-    - Standardizing section/chapter markers
-    - Trimming whitespace and removing empty lines
-    - Removing lines with only digits
-
-    The function reads files from the 'edited' subdirectory of the specified
-    working directory, processes them, and writes the formatted content back
-    to the same files.
+    This function applies various text formatting rules to either all .txt files in a directory
+    or a single file, depending on the input provided.
 
     Raises:
-        SystemExit: If the directory path is not provided as a command-line argument.
+        SystemExit: If the path is not provided as a command-line argument.
         IOError: If there are issues reading from or writing to files.
     """
     try:
-        working_directory = sys.argv[1]
+        input_path = sys.argv[1]
     except IndexError:
-        print("Please pass directory name")
+        print("Please pass a directory or file path")
         sys.exit(1)
 
-    edited_directory = os.path.join(working_directory, "edited")
-    edited_filenames = [f for f in os.listdir(edited_directory) 
-                        if not f.startswith('.') and os.path.isfile(os.path.join(edited_directory, f))]
+    if os.path.isfile(input_path):
+        process_file(input_path)
+    elif os.path.isdir(input_path):
+        filenames = [f for f in os.listdir(input_path) 
+                     if f.endswith('.txt') and os.path.isfile(os.path.join(input_path, f))]
+        for file_name in filenames:
+            full_filename = os.path.join(input_path, file_name)
+            process_file(full_filename)
+    else:
+        print(f"The provided path {input_path} is neither a file nor a directory")
+        sys.exit(1)
 
-    for file_name in edited_filenames:
-        full_filename = os.path.join(edited_directory, file_name)
-        try:
-            with open(full_filename, "r", encoding="utf-8") as f:
-                source_text = f.read()
+def process_file(file_path):
+    """
+    Process and format a single text file.
+
+    Args:
+        file_path (str): The path to the file to be processed.
+    """
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            source_text = f.read()
 
             # Replace fancy quotes with regular quotes
             source_text = re.sub(r"[“”]", '"', source_text)
@@ -98,11 +101,18 @@ def format_files():
             # Remove empty lines
             source_text = re.sub(r"^\s*$", "", source_text, flags=re.MULTILINE)
 
-            with open(full_filename, "w", encoding="utf-8") as f:
+            # Generate the new file name with "_fmtd" suffix
+            file_name, file_extension = os.path.splitext(file_path)
+            new_file_path = f"{file_name}_fmtd{file_extension}"
+
+            # Write the formatted content to the new file
+            with open(new_file_path, "w", encoding="utf-8") as f:
                 f.write(source_text)
 
-        except IOError as e:
-            logger.error(f"Error processing file {full_filename}: {e}")
+            logger.info(f"Formatted file saved as: {new_file_path}")
+
+    except IOError as e:
+        logger.error(f"Error processing file {file_path}: {e}")
 
 
 if __name__ == "__main__":
