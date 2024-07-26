@@ -31,6 +31,16 @@ logger = logging.getLogger(__name__)
 
 matplotlib.use("qt5agg")
 
+# Add these constants at the top of the file, after imports
+WINDOW_TITLE = "Pick and Choose"
+WINDOW_GEOMETRY = (100, 100, 800, 600)
+TEXT_AREA_MIN_SIZE = (800, 500)
+CANVAS_MIN_SIZE = (550, 400)
+HEADER_FONT_SIZE = "16px"
+LABEL_FONT_SIZE = "14px"
+TEXT_AREA_FONT_SIZE = "16px"
+TAB_STOP_WIDTH = 30
+SECTION_SEPARATOR = "***"
 
 def get_score(text: str, pattern: re.Pattern) -> float:
     """
@@ -92,7 +102,7 @@ class MatplotlibCanvas(FigureCanvas):
         self.setParent(parent)
         self.plot()
 
-        self.setMinimumSize(550, 400)
+        self.setMinimumSize(*CANVAS_MIN_SIZE)
 
     def plot(self, section_text: str = None) -> None:
         """
@@ -178,8 +188,8 @@ class MainWindow(QMainWindow):
         self.section_index: int = 0
         self.output_filename = output_filename
 
-        self.setWindowTitle("Pick and Choose")
-        self.setGeometry(100, 100, 800, 600)
+        self.setWindowTitle(WINDOW_TITLE)
+        self.setGeometry(*WINDOW_GEOMETRY)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -187,22 +197,22 @@ class MainWindow(QMainWindow):
         layout = QGridLayout()
 
         header_label = QLabel("Section")
-        header_label.setStyleSheet("font-size: 16px")
+        header_label.setStyleSheet(f"font-size: {HEADER_FONT_SIZE}")
 
         self.primary_label = QLabel("Primary:")
-        self.primary_label.setStyleSheet("font-size: 14px;")
+        self.primary_label.setStyleSheet(f"font-size: {LABEL_FONT_SIZE};")
 
         self.secondary_label = QLabel("Secondary:")
-        self.secondary_label.setStyleSheet("font-size: 14px;")
+        self.secondary_label.setStyleSheet(f"font-size: {LABEL_FONT_SIZE};")
 
         self.book_header_label = QLabel("Book")
-        self.book_header_label.setStyleSheet("font-size: 16px")
+        self.book_header_label.setStyleSheet(f"font-size: {HEADER_FONT_SIZE}")
 
         self.book_primary_label = QLabel("Primary:")
-        self.book_primary_label.setStyleSheet("font-size: 14px;")
+        self.book_primary_label.setStyleSheet(f"font-size: {LABEL_FONT_SIZE};")
 
         self.book_secondary_label = QLabel("Secondary:")
-        self.book_secondary_label.setStyleSheet("font-size: 14px;")
+        self.book_secondary_label.setStyleSheet(f"font-size: {LABEL_FONT_SIZE};")
 
         book_primary_score = self.get_book_primary_score()
         self.book_primary_label.setText(
@@ -233,9 +243,9 @@ class MainWindow(QMainWindow):
 
         self.text_area = QTextEdit()
         self.text_area.setPlainText(self.get_section_with_tabs())
-        self.text_area.setStyleSheet("font-size: 16px;")
-        self.text_area.setMinimumSize(800, 500)
-        self.text_area.setTabStopWidth(30)
+        self.text_area.setStyleSheet(f"font-size: {TEXT_AREA_FONT_SIZE};")
+        self.text_area.setMinimumSize(*TEXT_AREA_MIN_SIZE)
+        self.text_area.setTabStopWidth(TAB_STOP_WIDTH)
 
         layout.addWidget(keep_button, 0, 1, alignment=Qt.AlignTop)
         layout.addWidget(trash_button, 1, 1, alignment=Qt.AlignTop)
@@ -324,7 +334,7 @@ class MainWindow(QMainWindow):
                     .replace("*", "")
                     .replace("\t", "")
                     .replace("\n\n", "\n")
-                    + "\n***\n"
+                    + f"\n{SECTION_SEPARATOR}\n"
                 )
 
     def get_book_primary_score(self) -> float:
@@ -387,7 +397,7 @@ if __name__ == "__main__":
     input_filename: str = argv[1]
     output_filename: str = argv[2]
     file_text: str = get_file(input_filename)
-    sections: List[str] = file_text.split("***")
+    sections: List[str] = file_text.split(SECTION_SEPARATOR)
 
     current_full_text: str = file_text
 
