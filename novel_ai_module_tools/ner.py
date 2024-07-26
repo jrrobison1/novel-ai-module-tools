@@ -1,4 +1,3 @@
-import os
 from typing import Dict, List, Set, TextIO
 from pathlib import Path
 
@@ -34,9 +33,9 @@ def get_unique_entities(ner_entities: Doc) -> Set[str]:
 
 def get_ner_write_file(
     ner_directory: Path, file_name: Path, strip_prefixes: List[str]
-) -> TextIO:
+) -> Path:
     """
-    Create and open a file for writing NER results.
+    Create a Path object for the NER results file.
 
     Args:
         ner_directory (Path): The directory where the output file will be created.
@@ -44,13 +43,13 @@ def get_ner_write_file(
         strip_prefixes (List[str]): Prefixes to be removed from the file name.
 
     Returns:
-        TextIO: An open file object for writing NER results.
+        Path: A Path object for the NER results file.
     """
     base_file_name = file_name.name
     for strip_prefix in strip_prefixes:
         base_file_name = base_file_name.removeprefix(strip_prefix)
 
-    return (ner_directory / f"{NER_FILE_PREFIX}{base_file_name}").open("w")
+    return ner_directory / f"{NER_FILE_PREFIX}{base_file_name}"
 
 
 def perform_ner(
@@ -90,25 +89,24 @@ def perform_ner(
 
         ner_entities: Doc = NER(data)
         unique_entities: Set[str] = get_unique_entities(ner_entities)
-        output_file: TextIO = get_ner_write_file(
+        output_file_path: Path = get_ner_write_file(
             ner_directory, file_name, strip_prefixes
         )
 
-        for name in sorted(unique_entities):
-            if name[:-1] in unique_entities:  # Ignore plurals of the same name
-                continue
-            if (
-                name.endswith("'s") or name.lower() in ignore_names
-            ):  # Ignore possessives
-                continue
+        with output_file_path.open("w") as output_file:
+            for name in sorted(unique_entities):
+                if name[:-1] in unique_entities:  # Ignore plurals of the same name
+                    continue
+                if (
+                    name.endswith("'s") or name.lower() in ignore_names
+                ):  # Ignore possessives
+                    continue
 
-            write_out = f"{name}|PERSON|"
+                write_out = f"{name}|PERSON|"
 
-            for name_type, name_list in names.items():
-                if name in name_list:
-                    write_out = write_out + name_type
-                    break
+                for name_type, name_list in names.items():
+                    if name in name_list:
+                        write_out = write_out + name_type
+                        break
 
-            output_file.write(write_out + "\n")
-
-        output_file.close()
+                output_file.write(write_out + "\n")
