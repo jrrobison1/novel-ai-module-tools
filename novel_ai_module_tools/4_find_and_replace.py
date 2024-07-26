@@ -1,14 +1,23 @@
-#!/usr/bin/env python3
-import coloredlogs, logging
-from config import *
-from difflib import SequenceMatcher
+"""
+This module performs name replacement operations on text files.
+
+It reads input files, processes named entities, and replaces names with unique alternatives
+while maintaining consistency across the project and individual files.
+"""
+
+import logging
 import os
-from os import replace, walk
-from resources_loader import load_name_replacements
 import random
 import re
 import sys
+from difflib import SequenceMatcher
+from os import walk
+from typing import List, Set, Dict, Tuple
 
+import coloredlogs
+
+from novel_ai_module_tools.config import *
+from novel_ai_module_tools.resources_loader import load_name_replacements
 
 coloredlogs.install(level=LOG_LEVEL, fmt="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -65,8 +74,25 @@ for filename in file_names:
 
 
 def get_unique_replacement(
-    original_name, name_type, replacement_list, used_project_pile, used_file_pile
-):
+    original_name: str,
+    name_type: str,
+    replacement_list: List[str],
+    used_project_pile: List[str],
+    used_file_pile: List[str],
+) -> str:
+    """
+    Find a unique replacement name that meets specific criteria.
+
+    Args:
+        original_name (str): The original name to be replaced.
+        name_type (str): The type of the name (e.g., first name, surname).
+        replacement_list (List[str]): List of potential replacement names.
+        used_project_pile (List[str]): Names already used in the project.
+        used_file_pile (List[str]): Names already used in the current file.
+
+    Returns:
+        str: A unique replacement name, or an empty string if no suitable replacement is found.
+    """
     for candidate in replacement_list:
         fail = False
 
@@ -140,6 +166,18 @@ def get_unique_replacement(
 
 
 def get_replacement(original_name, name_type, used_project_pile, used_file_pile):
+    """
+    Get a replacement name for the given original name and type.
+
+    Args:
+        original_name (str): The original name to be replaced.
+        name_type (str): The type of the name.
+        used_project_pile (List[str]): Names already used in the project.
+        used_file_pile (List[str]): Names already used in the current file.
+
+    Returns:
+        str: A replacement name, or an empty string if no suitable replacement is found.
+    """
     for category, replacement_list in names.items():
         if name_type == category:
             return get_unique_replacement(
@@ -155,6 +193,16 @@ def get_replacement(original_name, name_type, used_project_pile, used_file_pile)
 
 
 def get_ner_file_text(file_name, strip_prefixes):
+    """
+    Read the content of a Named Entity Recognition (NER) file.
+
+    Args:
+        file_name (str): The name of the file to read.
+        strip_prefixes (List[str]): Prefixes to be removed from the file name.
+
+    Returns:
+        str: The content of the NER file.
+    """
     base_file_name = os.path.basename(file_name)
     for strip_prefix in strip_prefixes:
         base_file_name = base_file_name.removeprefix(strip_prefix)
@@ -169,6 +217,15 @@ def get_ner_file_text(file_name, strip_prefixes):
 
 
 def get_input_text(file_name):
+    """
+    Read the content of an input file.
+
+    Args:
+        file_name (str): The name of the file to read.
+
+    Returns:
+        str: The content of the input file.
+    """
     with open(os.path.join(splits_directory, file_name), "r") as input_file:
         input_text = input_file.read()
     input_file.close()
@@ -176,6 +233,7 @@ def get_input_text(file_name):
     return input_text
 
 
+# Main processing loop
 for file_name in file_names:
     ner_file_text = get_ner_file_text(
         file_name, ["nosplits_", SPLITS_FIRST_HALF_PREFIX, SPLITS_SECOND_HALF_PREFIX]
