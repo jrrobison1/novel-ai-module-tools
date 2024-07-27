@@ -9,16 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.x
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
@@ -30,5 +27,9 @@ jobs:
         poetry run python -m spacy download en_core_web_sm
     - name: Run tests
       run: |
-        poetry run pytest tests/
-        pytest tests/
+        poetry run pytest tests/ --cov=./ --cov-report=xml
+
+    - name: Check code coverage
+      working-directory: ./service
+      run: |
+        poetry run coverage report --fail-under=70
