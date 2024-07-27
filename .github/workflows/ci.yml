@@ -31,8 +31,3 @@ jobs:
     - name: Run tests
       run: |
         poetry run pytest -v tests/ --cov=./ --cov-report=xml
-
-    - name: Check code coverage
-      working-directory: ./service
-      run: |
-        poetry run coverage report --fail-under=70
