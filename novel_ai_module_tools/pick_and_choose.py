@@ -6,6 +6,14 @@ from novel_ai_module_tools.config import *
 import logging
 from matplotlib import pyplot
 import matplotlib
+import os
+
+# Check if running in a headless environment (like GitHub Actions)
+if os.environ.get("GITHUB_ACTIONS") or not os.environ.get("DISPLAY"):
+    matplotlib.use("Agg")  # Use the 'Agg' backend for non-GUI environments
+else:
+    matplotlib.use("qt5agg")  # Use 'qt5agg' for GUI environments
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
@@ -30,8 +38,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-matplotlib.use("qt5agg")
-
 WINDOW_TITLE = "Pick and Choose"
 WINDOW_GEOMETRY = (100, 100, 800, 600)
 TEXT_AREA_MIN_SIZE = (800, 500)
@@ -41,6 +47,7 @@ LABEL_FONT_SIZE = "14px"
 TEXT_AREA_FONT_SIZE = "16px"
 TAB_STOP_WIDTH = 30
 SECTION_SEPARATOR = "***"
+
 
 def get_score(text: str, pattern: re.Pattern) -> float:
     """
@@ -76,7 +83,7 @@ def get_file(filename: str) -> str:
         IOError: If there's an error reading the file.
     """
     try:
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         logger.error(f"File not found: {filename}")
@@ -301,12 +308,14 @@ class MainWindow(QMainWindow):
             self.update_temp_full_text()
 
             if self.section_index > len(self.sections) - 1:
-                logger.info(f"End of sections; writing out to file: {self.output_filename}")
+                logger.info(
+                    f"End of sections; writing out to file: {self.output_filename}"
+                )
                 logger.info(f"section_index: [{self.section_index}]")
                 logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
                 # Write file out
                 try:
-                    with open(self.output_filename, "w", encoding='utf-8') as f:
+                    with open(self.output_filename, "w", encoding="utf-8") as f:
                         f.write(self.current_full_text)
                 except IOError as e:
                     logger.error(f"Error writing to file {self.output_filename}: {e}")
@@ -406,7 +415,7 @@ class MainWindow(QMainWindow):
         """
         logger.info(f"Closing the application, writing to: {self.output_filename}")
         try:
-            with open(self.output_filename, "w", encoding='utf-8') as f:
+            with open(self.output_filename, "w", encoding="utf-8") as f:
                 f.write(self.current_full_text)
         except IOError as e:
             logger.error(f"Error writing to file {self.output_filename}: {e}")
