@@ -46,8 +46,6 @@ Usage:
 ```
 poetry run python pick_and_choose.py <file_name> <output_file_name>
 ```
-poetry run python pick_and_choose.py <file_name> <output_file_name>
-```
 or
 ```
 python pick_and_choose.py <file_name> <output_file_name>
