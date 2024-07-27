@@ -96,9 +96,9 @@ def process_files(working_directory: str) -> None:
     ]
 
     perform_ner(
-        file_names=[str(f) for f in ner_source_files],
-        ner_directory=str(ner_directory),
-        resource_directory=str(resource_dir),
+        file_names=ner_source_files,
+        ner_directory=ner_directory,
+        resource_directory=resource_dir,
         strip_prefixes=[
             "nosplits_",
             SPLITS_FIRST_HALF_PREFIX,
