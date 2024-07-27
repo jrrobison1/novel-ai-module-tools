@@ -1,6 +1,8 @@
-import pytest
+import os
 import re
 from unittest.mock import Mock, mock_open, patch
+
+import pytest
 
 # Mock matplotlib and PyQt5 before importing the module
 with patch.dict("os.environ", {"GITHUB_ACTIONS": "true"}):
@@ -14,16 +16,23 @@ with patch.dict("os.environ", {"GITHUB_ACTIONS": "true"}):
             SECONDARY_PATTERN,
         )
 
-from PyQt5.QtWidgets import QApplication
-from matplotlib.figure import Figure
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from PyQt5.QtWidgets import QApplication
+
 from novel_ai_module_tools.pick_and_choose import (
-    get_score,
-    get_file,
-    MatplotlibCanvas,
-    MainWindow,
     PRIMARY_PATTERN,
     SECONDARY_PATTERN,
+    MainWindow,
+    MatplotlibCanvas,
+    get_file,
+    get_score,
+)
+
+# Define a custom marker for tests that should be skipped on GitHub Actions
+pytest.mark.skipif_github = pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS") == "true",
+    reason="Test doesn't work on GitHub Actions",
 )
 
 
@@ -74,20 +83,20 @@ def matplotlib_canvas(qapp):
         return MatplotlibCanvas("Test section")
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_matplotlib_canvas_init(matplotlib_canvas):
     assert isinstance(matplotlib_canvas.fig, Figure)
     assert isinstance(matplotlib_canvas.ax, Axes)
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_matplotlib_canvas_plot(matplotlib_canvas):
     with patch.object(matplotlib_canvas, "draw") as mock_draw:
         matplotlib_canvas.plot("New section text")
         mock_draw.assert_called_once()
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_matplotlib_canvas_get_paragraph_scores_figure():
     fig, ax = MatplotlibCanvas.get_paragraph_scores_figure("Test\nparagraph\ntext")
     assert isinstance(fig, Figure)
@@ -101,7 +110,7 @@ def main_window(qapp):
     return MainWindow(sections, current_full_text, 1.0, 1.0, "output.txt")
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_init(main_window):
     assert main_window.sections == ["Section 1", "Section 2"]
     assert main_window.current_full_text == "Section 1\n***\nSection 2"
@@ -109,38 +118,38 @@ def test_main_window_init(main_window):
     assert main_window.output_filename == "output.txt"
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_get_section_with_tabs(main_window):
     assert main_window.get_section_with_tabs() == "\tSection 1"
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_update_temp_full_text(main_window):
     main_window.update_temp_full_text()
     assert main_window.current_full_text == "Section 1\n***\nSection 2\n***\n"
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_get_book_primary_score(main_window):
     assert isinstance(main_window.get_book_primary_score(), float)
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_get_book_secondary_score(main_window):
     assert isinstance(main_window.get_book_secondary_score(), float)
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_get_section_primary_score(main_window):
     assert isinstance(main_window.get_section_primary_score(), float)
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_get_section_secondary_score(main_window):
     assert isinstance(main_window.get_section_secondary_score(), float)
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_on_keep_button_clicked(main_window):
     with patch.object(main_window, "handle_button_click") as mock_handle:
         main_window.on_keep_button_clicked()
@@ -148,7 +157,7 @@ def test_main_window_on_keep_button_clicked(main_window):
         mock_handle.assert_called_once()
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_on_trash_button_clicked(main_window):
     with patch.object(main_window, "handle_button_click") as mock_handle:
         main_window.on_trash_button_clicked()
@@ -156,7 +165,7 @@ def test_main_window_on_trash_button_clicked(main_window):
         mock_handle.assert_called_once()
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_handle_button_click(main_window):
     with patch.object(main_window, "update_temp_full_text"), patch.object(
         main_window.canvas, "plot"
@@ -165,7 +174,7 @@ def test_main_window_handle_button_click(main_window):
         assert main_window.section_index == 1
 
 
-@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
+@pytest.mark.skipif_github
 def test_main_window_close_event(main_window):
     mock_event = Mock()
     with patch("builtins.open", mock_open()) as mock_file:
