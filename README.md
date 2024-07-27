@@ -1,44 +1,65 @@
 # novel-ai-module-tools
-Series of tools for use in preparing text for AI module generation in NovelAI (https://novelai.net/). 
+Series of tools for preparing text for AI module generation in NovelAI (https://novelai.net/).
 
-These are model-agnostic. I wrote them when Sigurd was the newest model, but they work fine formatting for Euterpe. The latest NovelAI model, Kayra, is great, but I don't know if allowing module creation for Kayra is on the NovelAI road map. If module creation for Kayra is added, these tools _should_ work, but I will revisit these if that were to happen.
+These tools are model-agnostic. They were originally written for the Sigurd model but work fine for formatting Euterpe modules as well. The latest NovelAI model, Kayra, is great, but module creation for Kayra is not currently available. If module creation for Kayra is added in the future, these tools _should_ work, but they will be revisited if necessary.
 
 ## Installation
 This project uses Poetry for dependency management.
 1. Ensure `poetry` is installed:
     - `pip install poetry`
 2. Clone this repository
-2. Within the project directory, run `poetry install`
+3. Within the project directory, run `poetry install`
 
+Alternatively, you can use the included `requirements.txt` file:
+`pip install -r requirements.txt`
 
 ## The tools
-There are five tools, prefixed with the number in the order in which they should be run.
+### 1. formatter.py
+Formats text in the way NovelAI prefers:
+- Each paragraph on a separate line
+- Fancy quotes converted to regular quotes
+- Smart ellipsis converted to simple text version
+- Dashes replaced with em dashes
+- Simple section/chapter headings replaced with "***"
 
-### formatter.py
-Simple tool that formats the text in the way NovelAI likes. Each paragraph on a separate line. Fancy quotes into regular quotes. Smart ellipsis into simple txt version. Dashes replaced with em's. Simple section/chapter headings replaced with "***".
-
-Formats the provided file, or formats all .txt files in the directory. Formatted 
-files saved with an "fmtd" suffix.
-
-NOTE: Running on a directory will format _all_ .txt files in that directory, creating files suffixed with _fmtd.
-
+Usage:
 `poetry run python formatter.py <file_name>`
 `poetry run python formatter.py <directory_name>`
+or
+`python formatter.py <file_name>`
+`python formatter.py <directory_name>`
 
-### pick_and_choose.py
-GUI application (using Qt) to pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json.
+Formats the provided file or all .txt files in the directory. Formatted files are saved with an "_fmtd" suffix.
 
-Run: `poetry run python pick_and_choose.py <file_name> <output_file_name>`
+NOTE: Running on a directory will format _all_ .txt files in that directory.
+
+### 2. pick_and_choose.py
+Usage: 
+`poetry run python pick_and_choose.py <file_name> <output_file_name>`
+or
+`python pick_and_choose.py <file_name> <output_file_name>`
+
+GUI application (using Qt) to select and modify sections of text for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns defined in contentConfig.json.
+
+To see relevant graphs in the GUI, modify the "patterns"->"primary" and "secondary" values in contentConfig.json to match your desired regular expressions.
 
 ![Pick and Choose Screenshot](/img/2_screenshot.png "Pick and Choose Screenshot")
 
-### split_and_ner.py
-Modules have a tendency to make NovelAI over-focus on specific names present in the training text you provide. You can avoid this by splitting the text up, and replacing the original names with different names.
+### 3. split_and_ner.py
+Usage: 
+`poetry run python split_and_ner.py <directory_name>`
+or
+`python split_and_ner.py <directory_name>`
 
-This splits the files in the given directory in half, evenly on the "***" separator. It performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
+Splits files in the given directory in half and performs Named Entity Recognition (NER) on each half using spaCy. This helps prevent over-focusing on specific names in the training text.
+
+Modules have a tendency to make NovelAI over-focus on specific names present in your training text. For example, if the text
+contains the name "Carlos", you will notice while using the module in NovelAI that a characters named Carlos frequently enter your stories at random. You can avoid this by splitting the text up, and replacing the original names with different names.
+
+This script splits the files in the given directory in half, evenly on the "***" separator. It performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
 
 This script will create subdirectories within the directory specified:
-`
+```
 - names_replaced
    - ner
        For each original file:
@@ -47,29 +68,57 @@ This script will create subdirectories within the directory specified:
        For each original file:
        - 1h_<original_file_name> <- First half of original file
        - 2h_<original_file_name> <- Second half of original file
-`
+```
 
-Run: `poetry run python split_and_ner.py <directory_name>`
+##### The ner_<original_file_name> files
+You will see in the file something like this:
+```
+Aikam|PERSON|
+Andrew|PERSON|M
+Ashil|PERSON|
+Besźel|PERSON|
+Boatman|PERSON|
+Boats|PERSON|
+Brandi|PERSON|F
+Brubaker|PERSON|
+Buidze|PERSON|
+Callahan|PERSON|M
+Cameron|PERSON|F
+```
 
-### find_and_replace.py
-Uses the list of named entities found by `split_and_ner.py` and replaces those names with names you select. You must drop these find/replace names in a folder in this project (not the folder of your text) called `resources/names/recognize` for names that should be replaced, and `resources/names/replace` for substitutions that should be made. The text file in the `recognize` directory must be named the same as the text file in the `replace` directory.
+Each line is formatted: 
+`<entity name found in text>|<type of named entity>|<type of name>`
 
-There are two main reasons for doing this. First, creating modules has a tendency to overfit in regards to the named entities. For example, if the text
-contains the name "Carlos", you will notice while using the module in NovelAI that a character named Carlos has a tendency to enter your stories at random. 
-Splitting (with `split_and_ner.py`) and then replacing names with this script attempts to fix this issue by maintaining the original text but reducing the appearance of any particular name.
+In the above example, `<type of name>` was detected as a male name for "Andrew" and female name for "Brandi"
 
-The other reason is one of preference. You may want to modify the names in the text to be more global. For example, if a text contains names that are typically used only in the U.S., you could use this to modify those names automatically with a list of more diverse names that you specify in a list. Or, maintain the existing diversity of the text but still use different names which you specify.
+To detect the `<type of name>`, names found in `resources->names->recognize` are used. This repository provides "F", "M" and "S" name lists, corrersponding to common male, female, and surnames. 
 
-There is a little work to be done before using this tool. Edit the ner file that was generated by `split_and_ner.py`. This file will be in `<your_directory>/names_replaced/ner/` and will be prefixed with `ner_`. You will need to go through this file and for each line determine the following:
-- Is it actually the name of a person? If no, delete the line
-- Is it a surname? Put the letter 'S' at the end of the line
-- Is is a female gendered name? Put the letter 'F' at the end of the line
-- Is it a male genered name? Put the letter 'M' at the end of the line.
+However, you may customize this however you like. You may create your own name lists—whatever file name you create will be used by the script to determine the `<type of name>`. For example, if you create a list named `gender_neutral.txt`, named entities found in your list will show up, for example, like `Sam|PERSON|gender_neutral`
 
-Run: `poetry run python find_and_replace.py <directory_name>`
+If the name found through NER was not found in one of your name lists, the line for that named entity in the ner file will have nothing after the final pipe symbol. It is recommended for these cases to manually edit the ner file to include the name type; for example you might change `Buidze|PERSON|` to `Buidze|PERSON|S`.
 
-### construct_graphs.py
-Run: `poetry run python construct_graphs.py <directory_name>`
+This becomes important when running the next tool (`find_and_replace.py`)
+
+
+### 4. find_and_replace.py
+Usage: 
+`poetry run python find_and_replace.py <directory_name>`
+or
+`python find_and_replace.py <directory_name>`
+
+Expects `split_and_ner` to have been run.
+
+`find_and_replace.py` uses the list of named entities that were found by `split_and_ner.py` and replaces those names with names you provide in `resources->names->replace` The text file in the `recognize` directory must be named the same as the text file in the `replace` directory. _However_, the lists themselves may be completely different. 
+
+This allows many creative use cases. You may want to modify the names in the text to be more global. For example, if a text contains names that are typically used only in the U.S., you could use this to modify those names automatically with a list of more diverse names that you specify in a list. Alternatively, you may wish maintain the existing diversity of names in the text but still use different names. Or you may wish to make all names gender-neutral. Or replace all names with fantasy or sci-fi sounding names. Play around with this!
+
+The result of running this script will be new files in the`<names_replaced>/<replaced>` subdirectory that have been split in half, had their named entities replaced, and have been stitched back together.
+
+### 5. construct_graphs.py
+Usage: 
+`poetry run python construct_graphs.py <directory_name>`
+or
+`python construct_graphs.py <directory_name>`
 
 
 ## Configuration options
@@ -83,7 +132,7 @@ An example using all available configurable options follows:
     },
     "ner": {
         "file_prefix": "ner_",
-        "model": "en_core_web_trf"
+        "model": "en_core_web_sm"
     },
     "replacements": {
         "replaced_prefix": "replaced_",
@@ -132,19 +181,3 @@ Default: `\w`
 
 `patterns["secondary"]`: For use in `2_match_count.py`. The secondary pattern used to find sections of the text that match a particular regex. Useful if there are two different patterns that one wishes to track separately
 Default: `\w`
-
-`patterns["match_primary_score_first_threshold"]`:
-
-`patterns[match_secondary_score_first_threshold"]`:
-
-`patterns[match_primary_score_second_threshold"]`:
-
-`patterns[match_secondary_score_second_threshold]"`:
-
-`patterns[match_word_count_threshold]`:
-
-`patterns[original_name_similarity_threshold"]`:
-
-`patterns[used_name_in_project_similarity_threshold"]`:
-
-`patterns[used_name_in_file_similarity_threshold"]`:
