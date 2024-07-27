@@ -57,7 +57,8 @@ To see relevant graphs in the GUI, modify the "patterns"->"primary" and "seconda
 
 ### 3. split_and_ner.py
 Usage: 
-```poetry run python split_and_ner.py <directory_name>
+```
+poetry run python split_and_ner.py <directory_name>
 ```
 or
 ```
