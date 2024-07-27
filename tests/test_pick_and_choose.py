@@ -98,7 +98,7 @@ def main_window(qapp):
     return MainWindow(sections, current_full_text, 1.0, 1.0, "output.txt")
 
 
-@pytest.mark.skip(reason="This test is not working on Github Actions")
+@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
 def test_main_window_init(main_window):
     assert main_window.sections == ["Section 1", "Section 2"]
     assert main_window.current_full_text == "Section 1\n***\nSection 2"
@@ -106,6 +106,7 @@ def test_main_window_init(main_window):
     assert main_window.output_filename == "output.txt"
 
 
+@pytest.mark.skip(reason="This test works locally but is not working on Github Actions")
 def test_main_window_get_section_with_tabs(main_window):
     assert main_window.get_section_with_tabs() == "\tSection 1"
 
