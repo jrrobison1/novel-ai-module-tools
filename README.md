@@ -26,9 +26,11 @@ Formats text in the way NovelAI prefers:
 
 Usage:
 ```
-`poetry run python formatter.py <file_name>
-`poetry run python formatter.py <directory_name>
+poetry run python formatter.py <file_name>
+poetry run python formatter.py <directory_name>
+```
 or
+```
 python formatter.py <file_name>
 python formatter.py <directory_name>
 ```
@@ -39,9 +41,13 @@ NOTE: Running on a directory will format _all_ .txt files in that directory.
 
 ### 2. pick_and_choose.py
 Usage: 
-```poetry run python pick_and_choose.py <file_name> <output_file_name>
+```
+poetry run python pick_and_choose.py <file_name> <output_file_name>
+```
 or
-python pick_and_choose.py <file_name> <output_file_name>```
+```
+python pick_and_choose.py <file_name> <output_file_name>
+```
 
 GUI application (using Qt) to select and modify sections of text for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns defined in contentConfig.json.
 
@@ -52,8 +58,11 @@ To see relevant graphs in the GUI, modify the "patterns"->"primary" and "seconda
 ### 3. split_and_ner.py
 Usage: 
 ```poetry run python split_and_ner.py <directory_name>
+```
 or
-python split_and_ner.py <directory_name>```
+```
+python split_and_ner.py <directory_name>
+```
 
 Splits files in the given directory in half and performs Named Entity Recognition (NER) on each half using spaCy. This helps prevent over-focusing on specific names in the training text.
 
@@ -106,8 +115,11 @@ This becomes important when running the next tool (`find_and_replace.py`)
 
 ### 4. find_and_replace.py
 Usage: 
-```poetry run python find_and_replace.py <directory_name>
+```
+poetry run python find_and_replace.py <directory_name>
+```
 or
+```
 python find_and_replace.py <directory_name>
 ```
 
@@ -121,8 +133,11 @@ The result of running this script will be new files in the`<names_replaced>/<rep
 
 ### 5. construct_graphs.py
 Usage: 
-```poetry run python construct_graphs.py <directory_name>
+```
+poetry run python construct_graphs.py <directory_name>
+```
 or
+```
 python construct_graphs.py <directory_name>
 ```
 
