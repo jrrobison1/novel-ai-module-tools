@@ -1,12 +1,14 @@
+import logging
+import os
 import re
 import sys
 from sys import argv
 from typing import List, Tuple
-from novel_ai_module_tools.config import *
-import logging
-from matplotlib import pyplot
+
 import matplotlib
-import os
+from matplotlib import pyplot
+
+from novel_ai_module_tools.config import *
 
 # Check if running in a headless environment (like GitHub Actions)
 if os.environ.get("GITHUB_ACTIONS") or not os.environ.get("DISPLAY"):
@@ -14,21 +16,22 @@ if os.environ.get("GITHUB_ACTIONS") or not os.environ.get("DISPLAY"):
 else:
     matplotlib.use("qt5agg")  # Use 'qt5agg' for GUI environments
 
+import traceback
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
+    QGridLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
     QPushButton,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
-    QMainWindow,
-    QTextEdit,
-    QLabel,
-    QGridLayout,
-    QMessageBox,
 )
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-import traceback
 
 logging.basicConfig(
     level=logging.INFO,
@@ -282,17 +285,17 @@ class MainWindow(QMainWindow):
 
     def on_keep_button_clicked(self) -> None:
         """Handle the 'Keep' button click event."""
-        logger.info("Keep button clicked")
-        logger.info(f"Section index: {self.section_index}")
-        logger.info(f"Sections length: {len(self.sections)}")
+        logger.debug("Keep button clicked")
+        logger.debug(f"Section index: {self.section_index}")
+        logger.debug(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = self.text_area.toPlainText()
         self.handle_button_click()
 
     def on_trash_button_clicked(self) -> None:
         """Handle the 'Trash' button click event."""
-        logger.info("Trash button clicked")
-        logger.info(f"Section index: {self.section_index}")
-        logger.info(f"Sections length: {len(self.sections)}")
+        logger.debug("Trash button clicked")
+        logger.debug(f"Section index: {self.section_index}")
+        logger.debug(f"Sections length: {len(self.sections)}")
         self.sections[self.section_index] = "***"
         self.handle_button_click()
 
@@ -302,21 +305,23 @@ class MainWindow(QMainWindow):
         Updates scores, moves to the next section, and handles end-of-sections case.
         """
         try:
-            logger.info("Handling button click")
+            logger.debug("Handling button click")
             self.section_index += 1
-            logger.info(f"Section index: {self.section_index}")
+            logger.debug(f"Section index: {self.section_index}")
             self.update_temp_full_text()
 
             if self.section_index > len(self.sections) - 1:
                 logger.info(
-                    f"End of sections; writing out to file: {self.output_filename}"
+                    f"End of sections; writing {len(self.sections)} sections out to file: {self.output_filename}"
                 )
-                logger.info(f"section_index: [{self.section_index}]")
-                logger.info(f"len(sections - 1): [{len(self.sections) - 1}]")
-                # Write file out
+                logger.debug(f"section_index: [{self.section_index}]")
+                logger.debug(f"len(sections - 1): [{len(self.sections) - 1}]")
                 try:
                     with open(self.output_filename, "w", encoding="utf-8") as f:
                         f.write(self.current_full_text)
+                    logger.info(
+                        f"Successfully wrote {len(self.sections)} sections to file: {self.output_filename}"
+                    )
                 except IOError as e:
                     logger.error(f"Error writing to file {self.output_filename}: {e}")
                     QMessageBox.critical(self, "Error", f"Failed to write to file: {e}")

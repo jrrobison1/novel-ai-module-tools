@@ -74,12 +74,16 @@ def perform_ner(
 
     # Ignore Names
     try:
+        logger.info(
+            f"Loading ignore names from: [{resource_directory}/ignore_names.txt]"
+        )
         ignore_names = (
             (resource_directory / "ignore_names.txt").read_text().splitlines()
         )
     except FileNotFoundError:
         ignore_names = []
 
+    logger.info(f"Loading NER model: [{NER_MODEL}]")
     NER: Language = spacy.load(
         NER_MODEL, disable=["tagger", "parser", "attribute_ruler", "lemmatizer"]
     )
@@ -89,17 +93,28 @@ def perform_ner(
 
         ner_entities: Doc = NER(data)
         unique_entities: Set[str] = get_unique_entities(ner_entities)
+        logger.info(
+            f"Found {len(unique_entities)} unique entities in file: [{file_name}]"
+        )
+
         output_file_path: Path = get_ner_write_file(
             ner_directory, file_name, strip_prefixes
         )
 
         with output_file_path.open("w") as output_file:
+            number_of_plurals = 0
+            number_of_possessives = 0
+            number_of_ignored = 0
             for name in sorted(unique_entities):
                 if name[:-1] in unique_entities:  # Ignore plurals of the same name
+                    number_of_plurals += 1
                     continue
-                if (
-                    name.endswith("'s") or name.lower() in ignore_names
-                ):  # Ignore possessives
+                if name.endswith("'s"):
+                    # Ignore possessives
+                    number_of_possessives += 1
+                    continue
+                if name.lower() in ignore_names:
+                    number_of_ignored += 1
                     continue
 
                 write_out = f"{name}|PERSON|"
@@ -110,3 +125,7 @@ def perform_ner(
                         break
 
                 output_file.write(write_out + "\n")
+
+        logger.info(
+            f"Processed file: [{file_name}]. Skipped {number_of_plurals} plurals, {number_of_possessives} possessives, and {number_of_ignored} names from the ignore list."
+        )

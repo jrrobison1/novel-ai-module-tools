@@ -20,6 +20,12 @@ from novel_ai_module_tools.config import *
 from novel_ai_module_tools.resources_loader import load_name_replacements
 
 coloredlogs.install(level=LOG_LEVEL, fmt="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
+)
+
 logger = logging.getLogger(__name__)
 
 try:

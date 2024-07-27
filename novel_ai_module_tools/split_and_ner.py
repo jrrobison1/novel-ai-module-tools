@@ -9,6 +9,12 @@ from novel_ai_module_tools.config import *
 from novel_ai_module_tools.ner import perform_ner
 from novel_ai_module_tools.split_file import split_file
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,6 +28,7 @@ def create_directories(working_directory: Path) -> Tuple[Path, Path, Path]:
     Returns:
         Tuple[Path, Path, Path]: Paths to names_replaced, splits, and ner directories.
     """
+    logger.info(f"Creating directories in: [{working_directory}]")
     names_replaced_directory = working_directory / "names_replaced"
     splits_directory = names_replaced_directory / "splits"
     ner_directory = names_replaced_directory / "ner"
@@ -46,11 +53,13 @@ def process_single_file(
     Returns:
         Path: Path to the processed file (either full file or randomly chosen split).
     """
+    logger.info(f"Processing file: [{file_name}]")
     full_filename = working_directory / file_name
     splits = split_file(str(full_filename))
     logger.info(f"Splitting file: [{full_filename}]")
 
     if splits["no_stars"]:
+        logger.info(f"No stars found in file: [{full_filename}]; not splitting.")
         file_path = splits_directory / f"nosplits_{file_name}"
         file_path.write_text(splits["full_text"])
         return file_path
@@ -77,6 +86,7 @@ def process_files(working_directory: str) -> None:
     """
     working_directory = Path(working_directory)
     resource_dir = Path(__file__).parent / "resources"
+
     names_replaced_directory, splits_directory, ner_directory = create_directories(
         working_directory
     )
@@ -87,6 +97,9 @@ def process_files(working_directory: str) -> None:
         if f.is_file() and f.suffix == ".txt" and not f.name.startswith(".")
     ]
 
+    logger.info(
+        f"Found {len(txt_filenames)} .txt files in directory: [{working_directory}]"
+    )
     logger.info(
         f"Splitting and performing NER on .txt files in directory: [{working_directory}]"
     )

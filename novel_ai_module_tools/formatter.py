@@ -3,6 +3,12 @@ import os
 import re
 import sys
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
+)
+
 logger = logging.getLogger(__name__)
 
 """
@@ -16,14 +22,6 @@ Usage:
     python formatter.py <file_path>
 
 """
-
-import logging
-import os
-import re
-import sys
-from os import walk
-
-logger = logging.getLogger(__name__)
 
 
 def format_files():
@@ -46,14 +44,18 @@ def format_files():
     if os.path.isfile(input_path):
         process_file(input_path)
     elif os.path.isdir(input_path):
-        filenames = [f for f in os.listdir(input_path) 
-                     if f.endswith('.txt') and os.path.isfile(os.path.join(input_path, f))]
+        filenames = [
+            f
+            for f in os.listdir(input_path)
+            if f.endswith(".txt") and os.path.isfile(os.path.join(input_path, f))
+        ]
         for file_name in filenames:
             full_filename = os.path.join(input_path, file_name)
             process_file(full_filename)
     else:
         print(f"The provided path {input_path} is neither a file nor a directory")
         sys.exit(1)
+
 
 def process_file(file_path):
     """
@@ -79,10 +81,9 @@ def process_file(file_path):
             source_text = re.sub(r"\s\.\.\.", "...", source_text)
 
             # Standardize section/chapter markers
-            source_text = re.sub(r"CHAPTER \d+$", "***", source_text, flags=re.MULTILINE)
-            
-
-            
+            source_text = re.sub(
+                r"CHAPTER \d+$", "***", source_text, flags=re.MULTILINE
+            )
 
             # Reduce multiple "***" lines to a single one
             source_text = re.sub(
@@ -103,9 +104,6 @@ def process_file(file_path):
             # Remove lines with only digits
             source_text = re.sub(r"^\d+$", "", source_text, flags=re.MULTILINE)
 
-            
-
-
             # Generate the new file name with "_fmtd" suffix
             file_name, file_extension = os.path.splitext(file_path)
             new_file_path = f"{file_name}_fmtd{file_extension}"
@@ -123,4 +121,4 @@ def process_file(file_path):
 if __name__ == "__main__":
     logger.info("Running script...")
     format_files()
-    print("Script complete.")
+    logger.info("Script complete.")
