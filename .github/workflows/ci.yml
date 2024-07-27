@@ -27,7 +27,7 @@ jobs:
         poetry run python -m spacy download en_core_web_sm
     - name: Run tests
       run: |
-        poetry run pytest tests/ --cov=./ --cov-report=xml
+        poetry run pytest -v tests/ --cov=./ --cov-report=xml
 
     - name: Check code coverage
       working-directory: ./service
