@@ -1,7 +1,7 @@
 # novel-ai-module-tools
 [![CI](https://github.com/jrrobison1/novel-ai-module-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/jrrobison1/novel-ai-module-tools/actions/workflows/ci.yml) 
 
-Series of tools for preparing text for AI module generation in NovelAI (https://novelai.net/).
+Tools for preparing text for AI module generation in NovelAI (https://novelai.net/).
 
 These tools are model-agnostic. They were originally written for the Sigurd model but work fine for formatting Euterpe modules as well. The latest NovelAI model, Kayra, is great, but module creation for Kayra is not currently available. If module creation for Kayra is added in the future, these tools _should_ work, but they will be revisited if necessary.
 
