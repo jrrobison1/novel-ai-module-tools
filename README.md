@@ -15,23 +15,39 @@ This project uses Poetry for dependency management.
 There are five tools, prefixed with the number in the order in which they should be run.
 
 ### formatter.py
-Formats the text in the way NovelAI likes. Each paragraph on a separate line. Fancy quotes into regular quotes. Smart ellipsis into simple txt version. Dashes replaced with em's. Simple section/chapter headings replaced with "***".
+Simple tool that formats the text in the way NovelAI likes. Each paragraph on a separate line. Fancy quotes into regular quotes. Smart ellipsis into simple txt version. Dashes replaced with em's. Simple section/chapter headings replaced with "***".
 
 Formats the provided file, or formats all .txt files in the directory. Formatted 
 files saved with an "fmtd" suffix.
 
-Run: `poetry run python formatter.py <file_name>`
-or `poetry run python formatter.py <directory_name>`
+NOTE: Running on a directory will format _all_ .txt files in that directory, creating files suffixed with _fmtd.
+
+`poetry run python formatter.py <file_name>`
+`poetry run python formatter.py <directory_name>`
 
 ### pick_and_choose.py
-Pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json.
+GUI application (using Qt) to pick, choose, and modify sections of the text to be used for module creation. Statistics are calculated and a graph is displayed based on regular expression patterns of your choosing, defined in contentConfig.json.
 
-Run: `poetry run python pick_and_choose.py <file_name>`
+Run: `poetry run python pick_and_choose.py <file_name> <output_file_name>`
 
 ![Pick and Choose Screenshot](/img/2_screenshot.png "Pick and Choose Screenshot")
 
 ### split_and_ner.py
-Splits the files in the given directory in half, and performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
+Modules have a tendency to make NovelAI over-focus on specific names present in the training text you provide. You can avoid this by splitting the text up, and replacing the original names with different names.
+
+This splits the files in the given directory in half, evenly on the "***" separator. It performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
+
+This script will create subdirectories within the directory specified:
+`
+- names_replaced
+   - ner
+       For each original file:
+       - ner_<original_file_name>
+   - splits
+       For each original file:
+       - 1h_<original_file_name> <- First half of original file
+       - 2h_<original_file_name> <- Second half of original file
+`
 
 Run: `poetry run python split_and_ner.py <directory_name>`
 
