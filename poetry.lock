@@ -379,7 +379,7 @@ files = [
 name = "en-core-web-sm"
 version = "3.7.1"
 description = "English pipeline optimized for CPU. Components: tok2vec, tagger, parser, senter, ner, attribute_ruler, lemmatizer."
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "en_core_web_sm-3.7.1-py3-none-any.whl", hash = "sha256:86cc141f63942d4b2c5fcee06630fd6f904788d2f0ab005cce45aadb8fb73889"},
@@ -1984,4 +1984,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9c65663ee89973bce070e934076bd2b7b5591ce373a237940a1d27aceaa83e00"
+content-hash = "5cb21a6e0fe1774470eba78b770f0a06338e958272a5a63e44607b51671f7dbb"
