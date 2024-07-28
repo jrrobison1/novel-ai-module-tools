@@ -8,14 +8,9 @@ from numpy import random
 from novel_ai_module_tools.config import *
 from novel_ai_module_tools.ner import perform_ner
 from novel_ai_module_tools.split_file import split_file
+from novel_ai_module_tools.logger_config import get_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
-)
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__file__)
 
 
 def create_directories(working_directory: Path) -> Tuple[Path, Path, Path]:

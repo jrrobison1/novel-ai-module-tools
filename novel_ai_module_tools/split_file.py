@@ -1,5 +1,8 @@
 import logging
+import sys
 from typing import Dict, Union
+
+from novel_ai_module_tools.logger_config import get_logger
 
 STAR_SEPARATOR = "***"
 FIRST_HALF = "first_half"
@@ -7,10 +10,8 @@ SECOND_HALF = "second_half"
 NO_STARS = "no_stars"
 FULL_TEXT = "full_text"
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+
+logger = get_logger(__file__)
 
 
 def get_star_index(input_text: str) -> int:

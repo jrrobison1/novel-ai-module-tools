@@ -1,3 +1,4 @@
+import sys
 from typing import Dict, List, Set, TextIO
 from pathlib import Path
 
@@ -7,6 +8,9 @@ from spacy.tokens import Doc
 
 from novel_ai_module_tools.config import *
 from novel_ai_module_tools.resources_loader import load_name_recognizers
+from novel_ai_module_tools.logger_config import get_logger
+
+logger = get_logger(__file__)
 
 
 def get_unique_entities(ner_entities: Doc) -> Set[str]:

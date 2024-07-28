@@ -2,8 +2,12 @@ import logging
 from collections import OrderedDict
 from pathlib import Path
 import random
+import sys
 
-logger = logging.getLogger(__name__)
+from novel_ai_module_tools.logger_config import get_logger
+
+
+logger = get_logger(__file__)
 
 
 def load_names(path):

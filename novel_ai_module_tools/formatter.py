@@ -3,13 +3,10 @@ import os
 import re
 import sys
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
-)
+from novel_ai_module_tools.logger_config import get_logger
 
-logger = logging.getLogger(__name__)
+
+logger = get_logger(__file__)
 
 """
 formatter.py
@@ -59,6 +56,7 @@ def format_files():
                 full_filename = os.path.join(input_path, file_name)
                 process_file(full_filename)
         else:
+            logger.info("Format files in directory canceled by user.")
             print("Operation cancelled.")
             sys.exit(0)
     else:
@@ -128,6 +126,6 @@ def process_file(file_path):
 
 
 if __name__ == "__main__":
-    logger.info("Running script...")
+    logger.debug("Beginning script.")
     format_files()
-    logger.info("Script complete.")
+    logger.debug("Script complete.")

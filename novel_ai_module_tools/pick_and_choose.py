@@ -9,6 +9,7 @@ import matplotlib
 from matplotlib import pyplot
 
 from novel_ai_module_tools.config import *
+from novel_ai_module_tools.logger_config import get_logger
 
 # Check if running in a headless environment (like GitHub Actions)
 if os.environ.get("GITHUB_ACTIONS") or not os.environ.get("DISPLAY"):
@@ -33,13 +34,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler(sys.stdout)],
-)
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__file__)
 
 WINDOW_TITLE = "Pick and Choose"
 WINDOW_GEOMETRY = (100, 100, 800, 600)
