@@ -49,9 +49,18 @@ def format_files():
             for f in os.listdir(input_path)
             if f.endswith(".txt") and os.path.isfile(os.path.join(input_path, f))
         ]
-        for file_name in filenames:
-            full_filename = os.path.join(input_path, file_name)
-            process_file(full_filename)
+        num_files = len(filenames)
+        print(f"Found {num_files} .txt file(s) in the directory: {input_path}")
+        confirmation = (
+            input(f"Do you want to format {num_files} file(s)? (Y/n): ").strip().lower()
+        )
+        if confirmation in ["y", "yes", ""]:
+            for file_name in filenames:
+                full_filename = os.path.join(input_path, file_name)
+                process_file(full_filename)
+        else:
+            print("Operation cancelled.")
+            sys.exit(0)
     else:
         print(f"The provided path {input_path} is neither a file nor a directory")
         sys.exit(1)
