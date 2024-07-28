@@ -1,5 +1,4 @@
-import sys
-from typing import Dict, List, Set, TextIO
+from typing import Dict, List, Set
 from pathlib import Path
 
 import spacy

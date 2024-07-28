@@ -1,8 +1,6 @@
-import logging
 from collections import OrderedDict
 from pathlib import Path
 import random
-import sys
 
 from novel_ai_module_tools.logger_config import get_logger
 
