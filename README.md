@@ -17,9 +17,14 @@ Alternatively, you can use the included `requirements.txt` file:
 pip install -r requirements.txt
 ```
 
+## Training material format
+These scripts expect your training text to be in plain text format.
+
 ## The tools
 ### 1. formatter.py
-Formats text in the way NovelAI prefers:
+Very basic regex formatter. It is recommended to use this in combination with other tools and manual editing.
+
+This script formats text in the way NovelAI prefers:
 - Each paragraph on a separate line
 - Fancy quotes converted to regular quotes
 - Smart ellipsis converted to simple text version
@@ -69,8 +74,7 @@ python split_and_ner.py <directory_name>
 
 Splits files in the given directory in half and performs Named Entity Recognition (NER) on each half using spaCy. This helps prevent over-focusing on specific names in the training text.
 
-Modules have a tendency to make NovelAI over-focus on specific names present in your training text. For example, if the text
-contains the name "Carlos", you will notice while using the module in NovelAI that a characters named Carlos frequently enter your stories at random. You can avoid this by splitting the text up, and replacing the original names with different names.
+Modules have a tendency to make NovelAI over-focus on specific names present in your training text. For example, if the text contains the name "Carlos", you will notice while using the module in NovelAI that a characters named Carlos frequently enter your stories at random. You can avoid this by splitting the text up, and replacing the original names with different names.
 
 This script splits the files in the given directory in half, evenly on the "***" separator. It performs NER separately on each half (using spaCy), creating both the split files and files containing lists of named entities.
 
