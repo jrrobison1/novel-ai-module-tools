@@ -113,6 +113,8 @@ However, you may customize this however you like. You may create your own name l
 
 If the name found through NER was not found in one of your name lists, the line for that named entity in the ner file will have nothing after the final pipe symbol. It is recommended for these cases to manually edit the ner file to include the name type; for example you might change `Buidze|PERSON|` to `Buidze|PERSON|S`.
 
+NER may mistakenly identify an entity as a person, or may recognize a person for whose name you don't want to change. In this case, just delete the line with their name on it.
+
 This becomes important when running the next tool (`find_and_replace.py`)
 
 
