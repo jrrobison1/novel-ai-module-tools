@@ -20,7 +20,7 @@ Usage:
 """
 
 
-def format_files():
+def format_files(input_func=input):
     """
     Process and format text files in the specified directory or a single file.
 
@@ -48,7 +48,9 @@ def format_files():
         num_files = len(filenames)
         print(f"Found {num_files} .txt file(s) in the directory: {input_path}")
         confirmation = (
-            input(f"Do you want to format {num_files} file(s)? (Y/n): ").strip().lower()
+            input_func(f"Do you want to format {num_files} file(s)? (Y/n): ")
+            .strip()
+            .lower()
         )
         if confirmation in ["y", "yes", ""]:
             for file_name in filenames:
