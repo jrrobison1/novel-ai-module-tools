@@ -1,3 +1,9 @@
+## ⚠️ Unmaintained
+
+This project is no longer maintained. I'm not developing it further or
+responding to issues and pull requests, but I'm leaving it up in case it's
+useful to anyone. Forks are welcome.
+
 # novel-ai-module-tools
 [![CI](https://github.com/jrrobison1/novel-ai-module-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/jrrobison1/novel-ai-module-tools/actions/workflows/ci.yml) 
 
